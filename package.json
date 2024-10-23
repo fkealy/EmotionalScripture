@@ -1,11 +1,11 @@
 {
-  "name": "EmotionalScripture",
+  "name": "emotionalscripture",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -20,6 +20,6 @@
     "tailwindcss": "^3.3.2",
     "typescript": "^5.0.2",
     "vite": "^4.3.2",
-    "vue-tsc": "^1.4.2"
+    "vue-tsc": "^1.8.22"
   }
 }

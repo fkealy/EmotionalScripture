@@ -13,6 +13,13 @@ const middleGroupRef = ref<SVGGElement | null>(null)
 const innerGroupRef = ref<SVGGElement | null>(null)
 const overlayRef = ref(null)
 
+const touchStartX = ref(0)
+const touchStartY = ref(0)
+const isTouching = ref(false)
+const touchStartTime = ref(0)
+const lastTouchMoveTime = ref(0)
+const lastTouchMoveAngle = ref(0)
+
 function polarToCartesian(centerX: number, centerY: number, radius: number, angleInDegrees: number) {
   const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0
   return {
@@ -101,8 +108,8 @@ function expandSegment(emotion: any, angle: number) {
         duration: 1,
         ease: "power2.inOut",
         onComplete: () => {
-          // Fade in the text
-          gsap.to('.emotion-details', {
+          // Fade in the text and scripture data
+          gsap.to(['.emotion-details', '.scripture-container'], {
             opacity: 1,
             duration: 0.5,
             delay: 0.2
@@ -116,8 +123,8 @@ function expandSegment(emotion: any, angle: number) {
 function contractSegment() {
   if (!isExpanded.value) return
 
-  // Fade out the text and close button first
-  gsap.to(['.emotion-details', '.close-button'], {
+  // Fade out the text, scripture data, and close button first
+  gsap.to(['.emotion-details', '.scripture-container', '.close-button'], {
     opacity: 0,
     duration: 0.3,
     onComplete: () => {
@@ -322,15 +329,66 @@ function handleKeyDown(event: KeyboardEvent) {
   }
 }
 
+function handleTouchStart(event: TouchEvent) {
+  if (isExpanded.value) return
+  const touch = event.touches[0]
+  touchStartX.value = touch.clientX
+  touchStartY.value = touch.clientY
+  isTouching.value = true
+  touchStartTime.value = Date.now()
+  lastTouchMoveTime.value = touchStartTime.value
+}
+
+function handleTouchMove(event: TouchEvent) {
+  if (!isTouching.value || isExpanded.value) return
+  const touch = event.touches[0]
+  const deltaX = touch.clientX - touchStartX.value
+  const deltaY = touch.clientY - touchStartY.value
+  const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI)
+  
+  const currentTime = Date.now()
+  const timeDiff = currentTime - lastTouchMoveTime.value
+  
+  if (timeDiff > 16) { // Limit to ~60fps
+    const angleDiff = angle - lastTouchMoveAngle.value
+    rotateWheel(angleDiff)
+    lastTouchMoveAngle.value = angle
+    lastTouchMoveTime.value = currentTime
+  }
+}
+
+function handleTouchEnd() {
+  if (!isTouching.value || isExpanded.value) return
+  isTouching.value = false
+  const touchDuration = Date.now() - touchStartTime.value
+  
+  if (touchDuration < 300) {
+    // If the touch duration is short, add some momentum
+    const momentum = (lastTouchMoveAngle.value - touchStartTime.value) / touchDuration
+    gsap.to([outerGroupRef.value, middleGroupRef.value, innerGroupRef.value], {
+      rotation: "+=" + (momentum * 100),
+      duration: 0.5,
+      ease: "power2.out",
+      svgOrigin: "0 0"
+    })
+  }
+}
+
 onMounted(() => {
   initializeWheel()
   window.addEventListener('wheel', handleWheel, { passive: false })
   window.addEventListener('keydown', handleKeyDown)
+  wheelRef.value?.addEventListener('touchstart', handleTouchStart, { passive: false })
+  wheelRef.value?.addEventListener('touchmove', handleTouchMove, { passive: false })
+  wheelRef.value?.addEventListener('touchend', handleTouchEnd)
 })
 
 onUnmounted(() => {
   window.removeEventListener('wheel', handleWheel)
   window.removeEventListener('keydown', handleKeyDown)
+  wheelRef.value?.removeEventListener('touchstart', handleTouchStart)
+  wheelRef.value?.removeEventListener('touchmove', handleTouchMove)
+  wheelRef.value?.removeEventListener('touchend', handleTouchEnd)
 })
 </script>
 
@@ -348,7 +406,20 @@ onUnmounted(() => {
     </div>
     <div class="emotion-details fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white text-2xl opacity-0 pointer-events-none max-w-md">
       <h2 class="text-4xl font-bold mb-4">{{ expandedEmotion?.name }}</h2>
-      <p class="text-xl">{{ expandedEmotion?.text }}</p>
+      <p class="text-xl mb-6">{{ expandedEmotion?.text }}</p>
+      <div v-if="expandedEmotion?.scripture" class="scripture-container text-left">
+        <div v-for="(scripture, index) in expandedEmotion.scripture" :key="index" class="mb-6">
+          <h3 class="text-2xl font-semibold mb-2">{{ scripture.scriptureSource }}</h3>
+          <p class="mb-2">{{ scripture.summary }}</p>
+          <p class="mb-2"><strong>Ideas:</strong> {{ scripture.ideas }}</p>
+          <div v-for="(quote, qIndex) in scripture.quotes" :key="qIndex" class="mb-4">
+            <blockquote class="italic border-l-4 border-white pl-4 py-2">
+              {{ quote.quote }}
+            </blockquote>
+            <p class="text-right">- {{ quote.author }}</p>
+          </div>
+        </div>
+      </div>
     </div>
     <button @click="contractSegment" 
             class="close-button fixed top-5 right-5 bg-white rounded-full w-10 h-10 text-2xl cursor-pointer items-center justify-center shadow-md hover:bg-gray-100 transition-colors duration-200 opacity-0"
@@ -357,3 +428,16 @@ onUnmounted(() => {
     </button>
   </div>
 </template>
+
+<style scoped>
+/* Add any additional styles here if needed */
+.emotion-details {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Add touch-action manipulation to allow custom touch handling */
+svg {
+  touch-action: none;
+}
+</style>

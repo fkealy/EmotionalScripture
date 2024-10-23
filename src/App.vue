@@ -1,24 +1,63 @@
 <script setup lang="ts">
 import EmotionWheel from './components/EmotionWheel.vue'
+import EmotionDetails from './components/EmotionDetails.vue'
+import { innerEmotions, middleEmotions, outerEmotions } from './emotionData';
+
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100 flex items-center justify-center">
-    <EmotionWheel />
+  <div id="app">
+    <h1>Emotional Scripture</h1>
+    <EmotionWheel :emotions="innerEmotions" @select-emotion="showEmotionDetails" />
+    <EmotionDetails v-if="selectedEmotion" :emotion="selectedEmotion" @close="closeEmotionDetails" />
   </div>
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+<script lang="ts">
+import { defineComponent } from 'vue';
+import EmotionWheel from './components/EmotionWheel.vue';
+import EmotionDetails from './components/EmotionDetails.vue';
+import { innerEmotions, middleEmotions, outerEmotions } from './emotionData';
+
+export default defineComponent({
+  name: 'App',
+  components: {
+    EmotionWheel,
+    EmotionDetails,
+  },
+  data() {
+    return {
+      innerEmotions,
+      middleEmotions,
+      outerEmotions,
+      selectedEmotion: null,
+    };
+  },
+  methods: {
+    showEmotionDetails(emotion: any) {
+      this.selectedEmotion = emotion;
+    },
+    closeEmotionDetails() {
+      this.selectedEmotion = null;
+    },
+  },
+});
+</script>
+
+<style>
+#app {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 300;
+  letter-spacing: -0.5px;
+  margin-bottom: 2rem;
 }
 </style>

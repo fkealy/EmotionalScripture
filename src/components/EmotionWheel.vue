@@ -8,16 +8,19 @@ interface Emotion {
   name: string
   color: string
   text: string
-  scripture?: {
+  parent?: string
+  children?: string[]
+  Christianity?: {
     scriptureSource: string
     summary: string
     ideas: string
+    similarTo: string[]
     quotes: {
       quote: string
       author: string
+      sourceURL: string
     }[]
   }[]
-  parent?: string
 }
 
 const currentRotation = ref(0)
@@ -141,8 +144,8 @@ function expandSegment(emotion: Emotion, angle: number) {
 
 function contractSegment() {
   if (!isExpanded.value) return
-
-  // Fade out the text, scripture data, and close button first
+  
+  // Fade out the text and scripture data
   gsap.to(['.emotion-details', '.scripture-container', '.close-button'], {
     opacity: 0,
     duration: 0.3,
@@ -431,25 +434,39 @@ onUnmounted(() => {
       <circle cx="0" cy="0" r="290" fill="#f5f5f5" stroke="#e0e0e0"/>
     </svg>
     <div ref="overlayRef"
-         class="absolute top-1/2 left-1/2 w-0 h-0 rounded-full transform -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+         class="fixed top-1/2 left-1/2 w-0 h-0 rounded-full transform -translate-x-1/2 -translate-y-1/2"
          :style="{ 
            backgroundColor: expandedEmotion ? expandedEmotion.color : 'transparent', 
-           opacity: 0
+           opacity: isExpanded ? 0.9 : 0,
+           zIndex: isExpanded ? 10 : -1,
+           width: isExpanded ? '300vmax' : '0',
+           height: isExpanded ? '300vmax' : '0',
+           transition: 'opacity 0.3s ease'
          }">
     </div>
-    <div class="emotion-details fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white opacity-0 pointer-events-none w-[90vw] max-w-md">
-      <h2 class="text-2xl md:text-4xl font-bold mb-3 md:mb-4">{{ expandedEmotion?.name }}</h2>
-      <p class="text-base md:text-xl mb-4 md:mb-6">{{ expandedEmotion?.text }}</p>
-      <div v-if="expandedEmotion?.scripture" class="scripture-container text-left">
-        <div v-for="(scripture, index) in expandedEmotion.scripture" :key="index" class="mb-4 md:mb-6">
-          <h3 class="text-lg md:text-2xl font-semibold mb-2">{{ scripture.scriptureSource }}</h3>
-          <p class="text-sm md:text-base mb-2">{{ scripture.summary }}</p>
-          <p class="text-sm md:text-base mb-2"><strong>Ideas:</strong> {{ scripture.ideas }}</p>
-          <div v-for="(quote, qIndex) in scripture.quotes" :key="qIndex" class="mb-3 md:mb-4">
-            <blockquote class="text-sm md:text-base italic border-l-4 border-white pl-3 md:pl-4 py-1 md:py-2">
-              {{ quote.quote }}
+    <div class="emotion-details fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white w-[95vw] max-w-[1200px]"
+         :style="{ 
+           zIndex: isExpanded ? 20 : -1,
+           opacity: isExpanded ? 1 : 0,
+           pointerEvents: isExpanded ? 'auto' : 'none',
+           transition: 'opacity 0.3s ease'
+         }">
+      <h2 class="text-2xl md:text-3xl font-bold mb-4">{{ expandedEmotion?.name }}</h2>
+      <p class="text-lg md:text-xl mb-6 font-light">{{ expandedEmotion?.text }}</p>
+      
+      <div v-if="expandedEmotion?.Christianity" class="scripture-container text-left">
+        <div class="scripture-content">
+          <div v-for="(scripture, index) in expandedEmotion.Christianity" 
+               :key="index"
+               class="scripture-section">
+            <h3 class="text-xl font-light mb-3">{{ scripture.scriptureSource }}</h3>
+            <p class="text-base mb-4">{{ scripture.summary }}</p>
+            <p class="text-base mb-4"><strong>Key Ideas:</strong> {{ scripture.ideas }}</p>
+
+            <blockquote class="text-lg font-light italic mb-2">
+              {{ scripture.quotes[0].quote }}
             </blockquote>
-            <p class="text-sm md:text-base text-right">- {{ quote.author }}</p>
+            <p class="text-right text-base mb-8">- {{ scripture.quotes[0].author }}</p>
           </div>
         </div>
       </div>
@@ -468,6 +485,8 @@ onUnmounted(() => {
   margin-top: 0; /* Remove the negative margin */
   min-height: 100vh; /* Ensure full viewport height */
   background-color: #f5f5f5; /* Match the wheel's background color */
+  position: relative;
+  z-index: 1;
 }
 
 /* Remove the media query for margin-top since we don't need it anymore */
@@ -494,5 +513,97 @@ path {
 
 path:hover {
   filter: url(#paper-texture) brightness(1.1);
+}
+
+.scripture-nav-btn {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  color: white;
+  width: 60px;
+  height: 80px;
+  border-radius: 8px;
+  font-size: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 30;
+}
+
+.scripture-nav-btn:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.scripture-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.scripture-nav-btn.left-0 {
+  left: 1rem;
+}
+
+.scripture-nav-btn.right-0 {
+  right: 1rem;
+}
+
+.scripture-content {
+  position: relative;
+  padding: 0 2rem;
+  width: 100%;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.scripture-section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.scripture-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+blockquote {
+  border-left: 2px solid rgba(255, 255, 255, 0.4);
+  padding-left: 1.2rem;
+  margin: 1.5rem 0;
+}
+
+/* Remove scrollbar styles */
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .scripture-content {
+    padding: 0 1rem;
+  }
+  
+  blockquote {
+    font-size: 1rem;
+    padding-left: 1rem;
+  }
+}
+
+@keyframes fadeEffect {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Add transition for content visibility */
+.scripture-slide {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* Ensure the close button stays on top */
+.close-button {
+  z-index: 60;
 }
 </style>

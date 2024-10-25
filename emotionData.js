@@ -1,5 +1,3 @@
-// Updated emotions data with scriptures from the Bible and Christianity
-
 const innerEmotions = [
     { 
         name: "Uncomfortable\nEmotions",
@@ -22,9 +20,8 @@ const middleEmotions = [
         text: "Sadness is a natural response to loss or disappointment.",
         parent: "Uncomfortable Emotions",
         children: ["Lonely", "Hurt", "Disappointed"],
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Psalm 34:18",
                 summary: "God is close to those who are brokenhearted.",
                 ideas: "In times of sadness, God's presence offers comfort.",
@@ -38,7 +35,6 @@ const middleEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Matthew 5:4",
                 summary: "Those who mourn will be comforted.",
                 ideas: "Acknowledging sorrow opens the way for divine comfort.",
@@ -59,9 +55,8 @@ const middleEmotions = [
         text: "Fear is your mind trying to keep you safe.",
         parent: "Uncomfortable Emotions",
         children: ["Anxious", "Powerless", "Overwhelmed"],
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Isaiah 41:10",
                 summary: "God encourages us not to fear because He is with us.",
                 ideas: "Divine presence provides strength and help in fearful times.",
@@ -75,7 +70,6 @@ const middleEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Psalm 56:3",
                 summary: "Trusting in God when afraid.",
                 ideas: "Faith can alleviate fear.",
@@ -96,9 +90,8 @@ const middleEmotions = [
         text: "Anger can signal that something needs to change.",
         parent: "Uncomfortable Emotions",
         children: ["Bored", "Jealous", "Annoyed"],
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Ephesians 4:26",
                 summary: "Be angry but do not sin; resolve issues promptly.",
                 ideas: "Manage anger responsibly without letting it lead to wrongdoing.",
@@ -112,7 +105,6 @@ const middleEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "James 1:19-20",
                 summary: "Be slow to anger; human anger doesn't produce righteousness.",
                 ideas: "Practice patience and listening to manage anger.",
@@ -133,9 +125,8 @@ const middleEmotions = [
         text: "Everyone feels embarrassed sometimes—it is part of being human.",
         parent: "Uncomfortable Emotions",
         children: ["Ashamed", "Excluded", "Guilty"],
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Romans 10:11",
                 summary: "Belief in God prevents shame.",
                 ideas: "Faith brings confidence and removes shame.",
@@ -149,7 +140,6 @@ const middleEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Psalm 25:3",
                 summary: "Trusting in God leads away from shame.",
                 ideas: "Dependence on God alleviates feelings of embarrassment.",
@@ -170,9 +160,8 @@ const middleEmotions = [
         text: "Playfulness helps us stay creative and light-hearted.",
         parent: "Comfortable Emotions",
         children: ["Affectionate", "Curious", "Creative"],
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Ecclesiastes 3:4",
                 summary: "There is a time for everything, including laughter and dance.",
                 ideas: "Embrace joyful moments as part of life's balance.",
@@ -186,7 +175,6 @@ const middleEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Matthew 18:3",
                 summary: "Encourages childlike qualities.",
                 ideas: "Adopting a childlike attitude can bring joy and openness.",
@@ -207,9 +195,8 @@ const middleEmotions = [
         text: "Happiness comes in many forms and intensities.",
         parent: "Comfortable Emotions",
         children: ["Caring", "Grateful", "Excited"],
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Philippians 4:4",
                 summary: "Encourages constant rejoicing in the Lord.",
                 ideas: "Spiritual joy is a continuous state of being.",
@@ -223,7 +210,6 @@ const middleEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Psalm 16:11",
                 summary: "God's presence fills us with joy.",
                 ideas: "True happiness is found in a relationship with God.",
@@ -244,9 +230,8 @@ const middleEmotions = [
         text: "Confidence helps us face challenges and try new things.",
         parent: "Comfortable Emotions",
         children: ["Brave", "Hopeful", "Powerful"],
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Philippians 4:13",
                 summary: "Strength comes through Christ.",
                 ideas: "Faith empowers us to do all things.",
@@ -260,7 +245,6 @@ const middleEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Hebrews 10:35-36",
                 summary: "Do not throw away your confidence; it will be rewarded.",
                 ideas: "Perseverance in confidence leads to fulfillment of God's promises.",
@@ -281,9 +265,8 @@ const middleEmotions = [
         text: "Love connects us to others and ourselves.",
         parent: "Comfortable Emotions",
         children: ["Respected", "Valued", "Accepted"],
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "1 Corinthians 13:4-7",
                 summary: "Describes the nature of true love.",
                 ideas: "Love is patient, kind, and enduring.",
@@ -297,7 +280,6 @@ const middleEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "John 15:12",
                 summary: "Jesus commands us to love one another.",
                 ideas: "Love others as a reflection of divine love.",
@@ -316,8 +298,6 @@ const middleEmotions = [
 
 // Outer emotions data with scriptures from the Bible and Christianity
 
-// Updated outer emotions data with scriptures from the Bible and Christianity
-
 const outerEmotions = [
     // Sad cluster
     { 
@@ -325,9 +305,8 @@ const outerEmotions = [
         color: "#9370DB", 
         text: "Feeling lonely is a signal that you value connection.", 
         parent: "Sad",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Hebrews 13:5",
                 summary: "God promises to never leave us.",
                 ideas: "Divine companionship in times of loneliness.",
@@ -341,7 +320,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Psalm 68:6",
                 summary: "God places the lonely in families.",
                 ideas: "God provides community and belonging.",
@@ -361,9 +339,8 @@ const outerEmotions = [
         color: "#8A2BE2", 
         text: "It's okay to feel hurt—your feelings matter.", 
         parent: "Sad",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Psalm 147:3",
                 summary: "God heals the brokenhearted.",
                 ideas: "Divine healing for emotional wounds.",
@@ -377,7 +354,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Matthew 11:28",
                 summary: "Jesus offers rest to those who are weary and burdened.",
                 ideas: "Finding solace in God's presence.",
@@ -397,9 +373,8 @@ const outerEmotions = [
         color: "#9400D3", 
         text: "Disappointment shows you care about outcomes.", 
         parent: "Sad",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Proverbs 13:12",
                 summary: "Hope deferred makes the heart sick.",
                 ideas: "Unrealized desires can cause emotional pain.",
@@ -413,7 +388,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Romans 5:5",
                 summary: "Hope in God does not disappoint.",
                 ideas: "Faith sustains us beyond disappointment.",
@@ -434,9 +408,8 @@ const outerEmotions = [
         color: "#4169E1", 
         text: "Anxiety is your mind trying to protect you.", 
         parent: "Scared",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Philippians 4:6-7",
                 summary: "Encourages not to be anxious but to present requests to God.",
                 ideas: "Prayer and thanksgiving bring peace beyond understanding.",
@@ -450,7 +423,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "1 Peter 5:7",
                 summary: "Cast all your anxiety on God because He cares for you.",
                 ideas: "Trusting in God's care alleviates anxiety.",
@@ -470,9 +442,8 @@ const outerEmotions = [
         color: "#1E90FF", 
         text: "This feeling will pass—let's explore your options.", 
         parent: "Scared",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "2 Corinthians 12:9",
                 summary: "Strength in weakness through God's grace.",
                 ideas: "God's power is made perfect in weakness.",
@@ -486,7 +457,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Isaiah 40:29",
                 summary: "God gives strength to the weary and increases the power of the weak.",
                 ideas: "Divine empowerment in times of weakness.",
@@ -506,9 +476,8 @@ const outerEmotions = [
         color: "#00BFFF", 
         text: "Let's break things down into smaller pieces.", 
         parent: "Scared",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Psalm 61:2",
                 summary: "Calling to God when overwhelmed.",
                 ideas: "Seeking higher strength in times of feeling overwhelmed.",
@@ -522,7 +491,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Matthew 11:28",
                 summary: "Jesus offers rest to the weary.",
                 ideas: "Finding rest in Christ when overwhelmed.",
@@ -543,9 +511,8 @@ const outerEmotions = [
         color: "#87CEEB", 
         text: "Boredom can spark creativity and change.", 
         parent: "Angry",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Colossians 3:23",
                 summary: "Work wholeheartedly as if for the Lord.",
                 ideas: "Engage in activities with purpose to overcome boredom.",
@@ -559,7 +526,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Proverbs 19:15",
                 summary: "Laziness brings on deep sleep, and the idle go hungry.",
                 ideas: "Encourages active engagement to prevent idleness.",
@@ -579,9 +545,8 @@ const outerEmotions = [
         color: "#20B2AA", 
         text: "Jealousy can help us understand our desires.", 
         parent: "Angry",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "James 3:16",
                 summary: "Envy leads to disorder and evil practices.",
                 ideas: "Warns against jealousy and its negative effects.",
@@ -595,7 +560,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Proverbs 14:30",
                 summary: "Envy rots the bones.",
                 ideas: "Encourages a peaceful heart over jealousy.",
@@ -615,9 +579,8 @@ const outerEmotions = [
         color: "#48D1CC", 
         text: "What boundaries might need setting?", 
         parent: "Angry",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Proverbs 12:16",
                 summary: "A prudent person overlooks an insult.",
                 ideas: "Encourages patience and restraint when annoyed.",
@@ -631,7 +594,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Ephesians 4:2",
                 summary: "Be completely humble and gentle; be patient.",
                 ideas: "Practice patience and bear with one another in love.",
@@ -652,9 +614,8 @@ const outerEmotions = [
         color: "#3CB371", 
         text: "Shame doesn't define you—let's work through this.", 
         parent: "Embarrassed",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Romans 8:1",
                 summary: "No condemnation for those in Christ.",
                 ideas: "Freedom from shame through faith.",
@@ -668,7 +629,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Psalm 34:5",
                 summary: "Those who look to God are radiant; their faces are never covered with shame.",
                 ideas: "Trust in God removes shame.",
@@ -688,9 +648,8 @@ const outerEmotions = [
         color: "#32CD32", 
         text: "This feeling is temporary—there are people who care.", 
         parent: "Embarrassed",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Ephesians 2:19",
                 summary: "We are no longer foreigners but fellow citizens.",
                 ideas: "Belonging to the community of believers.",
@@ -704,7 +663,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Psalm 27:10",
                 summary: "Even if family forsakes me, the Lord will receive me.",
                 ideas: "God accepts us even if others exclude us.",
@@ -724,9 +682,8 @@ const outerEmotions = [
         color: "#228B22", 
         text: "Guilt can guide us to align with our values.", 
         parent: "Embarrassed",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "1 John 1:9",
                 summary: "Confession leads to forgiveness and purification.",
                 ideas: "Acknowledging guilt allows for forgiveness.",
@@ -740,7 +697,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Romans 3:23-24",
                 summary: "All have sinned but are justified freely by grace.",
                 ideas: "Everyone experiences guilt, but grace offers redemption.",
@@ -761,9 +717,8 @@ const outerEmotions = [
         color: "#FFA500", 
         text: "Affection connects us to others.", 
         parent: "Playful",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "1 John 4:7",
                 summary: "Let us love one another, for love comes from God.",
                 ideas: "Affection reflects divine love.",
@@ -777,7 +732,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "John 13:34",
                 summary: "A new command to love one another as Jesus loved us.",
                 ideas: "Expressing affection through love is a commandment.",
@@ -797,9 +751,8 @@ const outerEmotions = [
         color: "#FF8C00", 
         text: "Curiosity leads to growth and learning.", 
         parent: "Playful",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Proverbs 25:2",
                 summary: "It is the glory of God to conceal a matter; to search out a matter is the glory of kings.",
                 ideas: "Encourages seeking knowledge and understanding.",
@@ -813,7 +766,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Matthew 7:7",
                 summary: "Ask, seek, knock; and it will be given to you.",
                 ideas: "Encourages active seeking and inquiry.",
@@ -833,9 +785,8 @@ const outerEmotions = [
         color: "#FF7F50", 
         text: "Creativity helps us solve problems and express ourselves.", 
         parent: "Playful",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Exodus 35:31-32",
                 summary: "God filled Bezalel with skill, ability, and knowledge in all kinds of crafts.",
                 ideas: "Creativity is a gift from God.",
@@ -849,7 +800,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Genesis 1:27",
                 summary: "Humans are created in God's image.",
                 ideas: "We reflect God's creativity.",
@@ -870,9 +820,8 @@ const outerEmotions = [
         color: "#FFE4E1", 
         text: "Your capacity to care is valuable.", 
         parent: "Happy",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Galatians 6:2",
                 summary: "Carry each other's burdens.",
                 ideas: "Caring for others fulfills Christ's law.",
@@ -886,7 +835,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Philippians 2:4",
                 summary: "Look not only to your own interests but also to the interests of others.",
                 ideas: "Encourages selflessness and caring for others.",
@@ -906,9 +854,8 @@ const outerEmotions = [
         color: "#FFC0CB", 
         text: "Gratitude helps us appreciate life's gifts.", 
         parent: "Happy",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "1 Thessalonians 5:18",
                 summary: "Give thanks in all circumstances.",
                 ideas: "Gratitude is God's will for us.",
@@ -922,7 +869,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Psalm 107:1",
                 summary: "Give thanks to the Lord for He is good.",
                 ideas: "Expressing gratitude for God's enduring love.",
@@ -942,9 +888,8 @@ const outerEmotions = [
         color: "#FFB6C1", 
         text: "Excitement energizes us for what is ahead.", 
         parent: "Happy",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Psalm 37:4",
                 summary: "Delight in the Lord and He will give you the desires of your heart.",
                 ideas: "Joy in God leads to fulfillment.",
@@ -958,7 +903,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Romans 12:11",
                 summary: "Never be lacking in zeal.",
                 ideas: "Maintain enthusiasm in serving the Lord.",
@@ -979,9 +923,8 @@ const outerEmotions = [
         color: "#FF0000", 
         text: "Courage is not about not feeling fear—it's about facing it.", 
         parent: "Confident",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Joshua 1:9",
                 summary: "Be strong and courageous; God is with you.",
                 ideas: "Divine presence empowers bravery.",
@@ -995,7 +938,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Psalm 27:1",
                 summary: "The Lord is my light and salvation—whom shall I fear?",
                 ideas: "Trust in God removes fear and instills bravery.",
@@ -1015,9 +957,8 @@ const outerEmotions = [
         color: "#FF4500", 
         text: "Hope helps us move forward.", 
         parent: "Confident",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Romans 15:13",
                 summary: "God fills you with joy and peace as you trust in Him, so you may overflow with hope.",
                 ideas: "Faith leads to abundant hope.",
@@ -1031,7 +972,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Jeremiah 29:11",
                 summary: "God has plans to give you hope and a future.",
                 ideas: "Divine plans instill hope.",
@@ -1051,9 +991,8 @@ const outerEmotions = [
         color: "#FF6347", 
         text: "You have strengths and capabilities.", 
         parent: "Confident",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Ephesians 3:20",
                 summary: "God is able to do immeasurably more than all we ask or imagine, according to His power at work within us.",
                 ideas: "Divine power works within us.",
@@ -1067,7 +1006,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "2 Timothy 1:7",
                 summary: "God gave us a spirit not of fear but of power, love, and self-discipline.",
                 ideas: "We are empowered by God's Spirit.",
@@ -1088,9 +1026,8 @@ const outerEmotions = [
         color: "#FF69B4", 
         text: "Respect is a fundamental human need.", 
         parent: "Loved",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "1 Peter 2:17",
                 summary: "Show proper respect to everyone.",
                 ideas: "Respect is a commandment for all relationships.",
@@ -1104,7 +1041,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Romans 12:10",
                 summary: "Honor one another above yourselves.",
                 ideas: "Respect others deeply.",
@@ -1124,9 +1060,8 @@ const outerEmotions = [
         color: "#FF1493", 
         text: "Your worth is inherent and real.", 
         parent: "Loved",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Matthew 10:31",
                 summary: "You are worth more than many sparrows.",
                 ideas: "God values each person greatly.",
@@ -1140,7 +1075,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Psalm 139:14",
                 summary: "You are fearfully and wonderfully made.",
                 ideas: "Recognize your intrinsic value as God's creation.",
@@ -1160,9 +1094,8 @@ const outerEmotions = [
         color: "#DC143C", 
         text: "You deserve to feel accepted and valued.", 
         parent: "Loved",
-        scripture: [
+        Christianity: [
             {
-                philosophy: "Christianity",
                 scriptureSource: "Romans 15:7",
                 summary: "Accept one another as Christ accepted you.",
                 ideas: "Mutual acceptance reflects Christ's acceptance of us.",
@@ -1176,7 +1109,6 @@ const outerEmotions = [
                 ]
             },
             {
-                philosophy: "Christianity",
                 scriptureSource: "Ephesians 1:5-6",
                 summary: "God predestined us for adoption through Jesus Christ.",
                 ideas: "We are accepted into God's family.",
@@ -1192,5 +1124,6 @@ const outerEmotions = [
         ]
     }
 ];
-// Add these export statements at the end of the file
+
+// Export statements
 export { innerEmotions, middleEmotions, outerEmotions };

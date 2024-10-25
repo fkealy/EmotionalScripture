@@ -3,9 +3,26 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { gsap } from 'gsap'
 import { innerEmotions, middleEmotions, outerEmotions } from '../emotionData'
 
+// Define the Emotion interface
+interface Emotion {
+  name: string
+  color: string
+  text: string
+  scripture?: {
+    scriptureSource: string
+    summary: string
+    ideas: string
+    quotes: {
+      quote: string
+      author: string
+    }[]
+  }[]
+  parent?: string
+}
+
 const currentRotation = ref(0)
 const isExpanded = ref(false)
-const expandedEmotion = ref(null)
+const expandedEmotion = ref<Emotion | null>(null)
 
 const wheelRef = ref<SVGSVGElement | null>(null)
 const outerGroupRef = ref<SVGGElement | null>(null)
@@ -55,15 +72,17 @@ function createSegmentPath(x: number, y: number, radius: number, startAngle: num
 
 function rotateWheel(angle: number) {
   if (isExpanded.value) return
+  
+  // Add smoothing to the rotation
   gsap.to([outerGroupRef.value, middleGroupRef.value, innerGroupRef.value], {
     rotation: "+=" + angle,
-    duration: 0.2,
+    duration: 0.3, // Increased duration for smoother rotation
     ease: "power2.out",
     svgOrigin: "0 0"
   })
 }
 
-function expandSegment(emotion: any, angle: number) {
+function expandSegment(emotion: Emotion, angle: number) {
   if (isExpanded.value) return
   isExpanded.value = true
   expandedEmotion.value = emotion
@@ -156,18 +175,46 @@ function contractSegment() {
 function createSegments(emotions: any[], innerRadius: number, outerRadius: number, group: SVGGElement) {
   const angleStep = 360 / emotions.length
   
+  // Create single defs element at the start
+  const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs")
+  
+  // Add paper texture filter
+  const filter = document.createElementNS("http://www.w3.org/2000/svg", "filter")
+  filter.setAttribute("id", "paper-texture")
+  filter.innerHTML = `
+    <feTurbulence 
+      type="turbulence" 
+      baseFrequency="0.5" 
+      numOctaves="2" 
+      seed="1" 
+      stitchTiles="stitch" 
+      result="noise"
+    />
+    <feDiffuseLighting in="noise" lighting-color="#ffffff" surfaceScale="0.3" result="diffLight">
+      <feDistantLight azimuth="45" elevation="65"/>
+    </feDiffuseLighting>
+    <feComposite operator="arithmetic" k1="1.1" k2="0.2" k3="0.1" k4="0" 
+                 in="SourceGraphic" in2="diffLight" result="textured"/>
+    <feGaussianBlur in="textured" stdDeviation="0.4" result="blurred"/>
+    <feBlend mode="soft-light" in="SourceGraphic" in2="blurred" result="withTexture"/>
+    <feColorMatrix type="matrix" in="withTexture"
+      values="0.95 0   0   0   0.02
+              0   0.95 0   0   0.02
+              0   0   0.95 0   0.02
+              0   0   0   0.95 0"/>
+  `
+  defs.appendChild(filter)
+  
   // Create gradients for inner emotions
   if (innerRadius === 50) {
-    const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs")
-    
     // Gradient for Uncomfortable Emotions
     const gradientUncomfortable = document.createElementNS("http://www.w3.org/2000/svg", "radialGradient")
     gradientUncomfortable.setAttribute("id", "gradientUncomfortable")
     gradientUncomfortable.innerHTML = `
-      <stop offset="0%" stop-color="#8A2BE2" />
-      <stop offset="33%" stop-color="#4169E1" />
-      <stop offset="66%" stop-color="#1E90FF" />
-      <stop offset="100%" stop-color="#87CEEB" />
+      <stop offset="0%" stop-color="#9370DB" />
+      <stop offset="33%" stop-color="#6495ED" />
+      <stop offset="66%" stop-color="#87CEEB" />
+      <stop offset="100%" stop-color="#B0E0E6" />
     `
     defs.appendChild(gradientUncomfortable)
     
@@ -175,15 +222,16 @@ function createSegments(emotions: any[], innerRadius: number, outerRadius: numbe
     const gradientComfortable = document.createElementNS("http://www.w3.org/2000/svg", "radialGradient")
     gradientComfortable.setAttribute("id", "gradientComfortable")
     gradientComfortable.innerHTML = `
-      <stop offset="0%" stop-color="#FFD700" />
-      <stop offset="33%" stop-color="#FFA500" />
-      <stop offset="66%" stop-color="#FF8C00" />
-      <stop offset="100%" stop-color="#FF7F50" />
+      <stop offset="0%" stop-color="#FFE4B5" />
+      <stop offset="33%" stop-color="#FFDAB9" />
+      <stop offset="66%" stop-color="#FFA07A" />
+      <stop offset="100%" stop-color="#E9967A" />
     `
     defs.appendChild(gradientComfortable)
-    
-    group.appendChild(defs)
   }
+  
+  // Add defs to group
+  group.appendChild(defs)
   
   emotions.forEach((emotion, index) => {
     const startAngle = index * angleStep
@@ -202,6 +250,9 @@ function createSegments(emotions: any[], innerRadius: number, outerRadius: numbe
     path.setAttribute("stroke", "white")
     path.setAttribute("class", "cursor-pointer transition-transform duration-200 hover:scale-102")
     
+    // Apply a lighter paper texture
+    path.setAttribute("style", "filter: url(#paper-texture) saturate(0.95)")
+    
     path.addEventListener('click', (e) => {
       e.stopPropagation()
       const segmentAngle = startAngle + (angleStep / 2)
@@ -210,7 +261,7 @@ function createSegments(emotions: any[], innerRadius: number, outerRadius: numbe
     
     group.appendChild(path)
 
-    // Add text labels with background
+    // Modified text sizing logic
     const textRadius = (innerRadius + outerRadius) / 2
     const textAngle = startAngle + (angleStep / 2)
     const textPos = polarToCartesian(0, 0, textRadius, textAngle)
@@ -218,9 +269,9 @@ function createSegments(emotions: any[], innerRadius: number, outerRadius: numbe
     const textGroup = document.createElementNS("http://www.w3.org/2000/svg", "g")
     
     if (innerRadius === 50) {
-      // For inner emotions, create curved text with background
+      // For inner emotions, curved text
       const textPathRadius = (innerRadius + outerRadius) / 2
-      const textArcStart = startAngle + 5 // Add a small offset to avoid text at the edges
+      const textArcStart = startAngle + 5
       const textArcEnd = endAngle - 5
       const textPathD = createArc(0, 0, textPathRadius, textArcStart, textArcEnd, false)
 
@@ -230,62 +281,32 @@ function createSegments(emotions: any[], innerRadius: number, outerRadius: numbe
       textPath.setAttribute("fill", "none")
       group.appendChild(textPath)
 
-      // Create text background
-      const textBackground = document.createElementNS("http://www.w3.org/2000/svg", "path")
-      textBackground.setAttribute("d", textPathD)
-      textBackground.setAttribute("fill", "white")
-      textBackground.setAttribute("fill-opacity", "0.7")
-      textBackground.setAttribute("stroke", "none")
-      group.appendChild(textBackground)
-
       const text = document.createElementNS("http://www.w3.org/2000/svg", "text")
-      text.setAttribute("class", "text-xs font-bold fill-current text-gray-800")
+      text.setAttribute("class", "text-lg md:text-base font-bold fill-current text-gray-800")
       
       const textPathElement = document.createElementNS("http://www.w3.org/2000/svg", "textPath")
       textPathElement.setAttribute("href", `#textPath-${index}`)
       textPathElement.setAttribute("startOffset", "50%")
       textPathElement.setAttribute("text-anchor", "middle")
-      textPathElement.setAttribute("dominant-baseline", "text-before-edge")
+      textPathElement.setAttribute("dominant-baseline", "middle")
       textPathElement.textContent = emotion.name.replace("\n", " ")
       
       text.appendChild(textPathElement)
       textGroup.appendChild(text)
     } else {
-      // For middle and outer emotions, keep the existing text logic
+      // For middle and outer emotions
       textGroup.setAttribute("transform", `translate(${textPos.x}, ${textPos.y}) rotate(${textAngle + (outerRadius > 200 ? 90 : 0)})`)
       
-      const textBackground = document.createElementNS("http://www.w3.org/2000/svg", "rect")
-      textBackground.setAttribute("class", "text-background")
-      textBackground.setAttribute("fill", "white")
-      textBackground.setAttribute("fill-opacity", "0.7")
-      
       const text = document.createElementNS("http://www.w3.org/2000/svg", "text")
-      text.setAttribute("class", "text-xs font-bold fill-current text-gray-800")
+      const textSizeClass = outerRadius > 200 ? 
+        "text-base md:text-sm font-bold fill-current text-gray-800" : 
+        "text-lg md:text-base font-bold fill-current text-gray-800"
+      text.setAttribute("class", textSizeClass)
       text.setAttribute("text-anchor", "middle")
       text.setAttribute("dominant-baseline", "middle")
       text.textContent = emotion.name
       
-      textGroup.appendChild(textBackground)
       textGroup.appendChild(text)
-
-      // Adjust text and background size
-      function adjustText() {
-        const bbox = text.getBBox()
-        const padding = 2
-        const bgWidth = bbox.width + 2 * padding
-        const bgHeight = bbox.height + 2 * padding
-        
-        textBackground.setAttribute("x", (-bgWidth / 2).toString())
-        textBackground.setAttribute("y", (-bgHeight / 2).toString())
-        textBackground.setAttribute("width", bgWidth.toString())
-        textBackground.setAttribute("height", bgHeight.toString())
-        
-        text.setAttribute("x", "0")
-        text.setAttribute("y", "0")
-      }
-
-      // Use a setTimeout to ensure the text has been rendered before measuring
-      setTimeout(adjustText, 0)
     }
     
     group.appendChild(textGroup)
@@ -341,20 +362,29 @@ function handleTouchStart(event: TouchEvent) {
 
 function handleTouchMove(event: TouchEvent) {
   if (!isTouching.value || isExpanded.value) return
+  event.preventDefault() // Prevent scrolling
   const touch = event.touches[0]
   const deltaX = touch.clientX - touchStartX.value
   const deltaY = touch.clientY - touchStartY.value
-  const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI)
   
-  const currentTime = Date.now()
-  const timeDiff = currentTime - lastTouchMoveTime.value
+  // Calculate the angle between current touch position and center of wheel
+  const wheelRect = wheelRef.value?.getBoundingClientRect()
+  if (!wheelRect) return
   
-  if (timeDiff > 16) { // Limit to ~60fps
-    const angleDiff = angle - lastTouchMoveAngle.value
-    rotateWheel(angleDiff)
-    lastTouchMoveAngle.value = angle
-    lastTouchMoveTime.value = currentTime
-  }
+  const wheelCenterX = wheelRect.left + wheelRect.width / 2
+  const wheelCenterY = wheelRect.top + wheelRect.height / 2
+  
+  const currentAngle = Math.atan2(touch.clientY - wheelCenterY, touch.clientX - wheelCenterX)
+  const startAngle = Math.atan2(touchStartY.value - wheelCenterY, touchStartX.value - wheelCenterX)
+  
+  // Calculate angle difference and apply dampening
+  const angleDiff = (currentAngle - startAngle) * (180 / Math.PI) * 0.5 // Reduced sensitivity
+  
+  // Update reference points for next move
+  touchStartX.value = touch.clientX
+  touchStartY.value = touch.clientY
+  
+  rotateWheel(angleDiff)
 }
 
 function handleTouchEnd() {
@@ -363,11 +393,14 @@ function handleTouchEnd() {
   const touchDuration = Date.now() - touchStartTime.value
   
   if (touchDuration < 300) {
-    // If the touch duration is short, add some momentum
+    // Reduced momentum effect
     const momentum = (lastTouchMoveAngle.value - touchStartTime.value) / touchDuration
+    const maxMomentum = 30 // Limit maximum momentum
+    const limitedMomentum = Math.min(Math.abs(momentum), maxMomentum) * Math.sign(momentum)
+    
     gsap.to([outerGroupRef.value, middleGroupRef.value, innerGroupRef.value], {
-      rotation: "+=" + (momentum * 100),
-      duration: 0.5,
+      rotation: "+=" + (limitedMomentum * 2), // Reduced multiplication factor
+      duration: 0.8, // Longer duration for smoother deceleration
       ease: "power2.out",
       svgOrigin: "0 0"
     })
@@ -393,8 +426,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="w-screen h-screen flex justify-center items-center overflow-hidden relative">
-    <svg ref="wheelRef" class="w-4/5 h-4/5 max-w-[80vmin] max-h-[80vmin]" viewBox="-300 -300 600 600">
+  <div class="wheel-container w-screen h-screen flex justify-center items-center overflow-hidden relative">
+    <svg ref="wheelRef" class="w-[95%] h-[95%] md:w-4/5 md:h-4/5 max-w-[95vmin] md:max-w-[80vmin] max-h-[95vmin] md:max-h-[80vmin]" viewBox="-300 -300 600 600">
       <circle cx="0" cy="0" r="290" fill="#f5f5f5" stroke="#e0e0e0"/>
     </svg>
     <div ref="overlayRef"
@@ -404,19 +437,19 @@ onUnmounted(() => {
            opacity: 0
          }">
     </div>
-    <div class="emotion-details fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white text-2xl opacity-0 pointer-events-none max-w-md">
-      <h2 class="text-4xl font-bold mb-4">{{ expandedEmotion?.name }}</h2>
-      <p class="text-xl mb-6">{{ expandedEmotion?.text }}</p>
+    <div class="emotion-details fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white opacity-0 pointer-events-none w-[90vw] max-w-md">
+      <h2 class="text-2xl md:text-4xl font-bold mb-3 md:mb-4">{{ expandedEmotion?.name }}</h2>
+      <p class="text-base md:text-xl mb-4 md:mb-6">{{ expandedEmotion?.text }}</p>
       <div v-if="expandedEmotion?.scripture" class="scripture-container text-left">
-        <div v-for="(scripture, index) in expandedEmotion.scripture" :key="index" class="mb-6">
-          <h3 class="text-2xl font-semibold mb-2">{{ scripture.scriptureSource }}</h3>
-          <p class="mb-2">{{ scripture.summary }}</p>
-          <p class="mb-2"><strong>Ideas:</strong> {{ scripture.ideas }}</p>
-          <div v-for="(quote, qIndex) in scripture.quotes" :key="qIndex" class="mb-4">
-            <blockquote class="italic border-l-4 border-white pl-4 py-2">
+        <div v-for="(scripture, index) in expandedEmotion.scripture" :key="index" class="mb-4 md:mb-6">
+          <h3 class="text-lg md:text-2xl font-semibold mb-2">{{ scripture.scriptureSource }}</h3>
+          <p class="text-sm md:text-base mb-2">{{ scripture.summary }}</p>
+          <p class="text-sm md:text-base mb-2"><strong>Ideas:</strong> {{ scripture.ideas }}</p>
+          <div v-for="(quote, qIndex) in scripture.quotes" :key="qIndex" class="mb-3 md:mb-4">
+            <blockquote class="text-sm md:text-base italic border-l-4 border-white pl-3 md:pl-4 py-1 md:py-2">
               {{ quote.quote }}
             </blockquote>
-            <p class="text-right">- {{ quote.author }}</p>
+            <p class="text-sm md:text-base text-right">- {{ quote.author }}</p>
           </div>
         </div>
       </div>
@@ -430,14 +463,36 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Add any additional styles here if needed */
-.emotion-details {
-  max-height: 80vh;
-  overflow-y: auto;
+.wheel-container {
+  padding-top: 0;
+  margin-top: 0; /* Remove the negative margin */
+  min-height: 100vh; /* Ensure full viewport height */
+  background-color: #f5f5f5; /* Match the wheel's background color */
 }
 
-/* Add touch-action manipulation to allow custom touch handling */
-svg {
-  touch-action: none;
+/* Remove the media query for margin-top since we don't need it anymore */
+
+/* Enhance text visibility */
+text {
+  paint-order: stroke;
+  stroke: white;
+  stroke-width: 3px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 640px) {
+  text {
+    stroke-width: 4px; /* Thicker stroke on mobile for better visibility */
+  }
+}
+
+/* Simplify the hover effect */
+path {
+  transition: all 0.3s ease;
+}
+
+path:hover {
+  filter: url(#paper-texture) brightness(1.1);
 }
 </style>

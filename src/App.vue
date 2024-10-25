@@ -7,7 +7,6 @@ import { innerEmotions, middleEmotions, outerEmotions } from './emotionData';
 
 <template>
   <div id="app">
-    <h1>Emotional Scripture</h1>
     <EmotionWheel :emotions="innerEmotions" @select-emotion="showEmotionDetails" />
     <EmotionDetails v-if="selectedEmotion" :emotion="selectedEmotion" @close="closeEmotionDetails" />
   </div>
@@ -51,7 +50,6 @@ export default defineComponent({
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 
 h1 {

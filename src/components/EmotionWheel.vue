@@ -76,11 +76,11 @@ function createSegmentPath(x: number, y: number, radius: number, startAngle: num
 function rotateWheel(angle: number) {
   if (isExpanded.value) return
   
-  // Add smoothing to the rotation
+  // Add smoothing to the rotation with consistent behavior
   gsap.to([outerGroupRef.value, middleGroupRef.value, innerGroupRef.value], {
     rotation: "+=" + angle,
-    duration: 0.3, // Increased duration for smoother rotation
-    ease: "power2.out",
+    duration: 0.2, // Reduced duration for more responsive feel
+    ease: "power1.out", // Changed ease for more natural movement
     svgOrigin: "0 0"
   })
 }
@@ -107,6 +107,9 @@ function expandSegment(emotion: Emotion, angle: number) {
     rotationDuration = 2.5
   }
 
+  // Determine if we're on a mobile device
+  const isMobile = window.innerWidth <= 768
+
   gsap.to([outerGroupRef.value, middleGroupRef.value, innerGroupRef.value], {
     rotation: rotationAngle,
     duration: rotationDuration,
@@ -115,25 +118,23 @@ function expandSegment(emotion: Emotion, angle: number) {
     onComplete: () => {
       currentRotation.value = rotationAngle % 360
       
-      // Show the close button immediately when the overlay starts expanding
       gsap.to('.close-button', {
         opacity: 1,
         duration: 0.3,
         display: 'flex'
       })
 
-      // Animate the overlay expansion after rotation
+      // Adjust animation duration based on device
       gsap.to(overlayRef.value, {
         width: '300vmax',
         height: '300vmax',
         opacity: 0.9,
-        duration: 1,
+        duration: isMobile ? 1.5 : 1, // Slower on mobile
         ease: "power2.inOut",
         onComplete: () => {
-          // Fade in the text and scripture data
           gsap.to(['.emotion-details', '.scripture-container'], {
             opacity: 1,
-            duration: 0.5,
+            duration: isMobile ? 0.7 : 0.5, // Slower fade in on mobile
             delay: 0.2
           })
         }
@@ -365,45 +366,68 @@ function handleTouchStart(event: TouchEvent) {
 
 function handleTouchMove(event: TouchEvent) {
   if (!isTouching.value || isExpanded.value) return
-  event.preventDefault() // Prevent scrolling
+  event.preventDefault()
   const touch = event.touches[0]
-  const deltaX = touch.clientX - touchStartX.value
-  const deltaY = touch.clientY - touchStartY.value
   
-  // Calculate the angle between current touch position and center of wheel
   const wheelRect = wheelRef.value?.getBoundingClientRect()
   if (!wheelRect) return
   
   const wheelCenterX = wheelRect.left + wheelRect.width / 2
   const wheelCenterY = wheelRect.top + wheelRect.height / 2
   
-  const currentAngle = Math.atan2(touch.clientY - wheelCenterY, touch.clientX - wheelCenterX)
-  const startAngle = Math.atan2(touchStartY.value - wheelCenterY, touchStartX.value - wheelCenterX)
+  // Calculate angles from center to touch points
+  const startAngle = Math.atan2(
+    touchStartY.value - wheelCenterY,
+    touchStartX.value - wheelCenterX
+  )
+  const currentAngle = Math.atan2(
+    touch.clientY - wheelCenterY,
+    touch.clientX - wheelCenterX
+  )
   
-  // Calculate angle difference and apply dampening
-  const angleDiff = (currentAngle - startAngle) * (180 / Math.PI) * 0.5 // Reduced sensitivity
+  // Calculate the shortest angular distance
+  let angleDiff = (currentAngle - startAngle) * (180 / Math.PI)
+  if (angleDiff > 180) angleDiff -= 360
+  if (angleDiff < -180) angleDiff += 360
   
-  // Update reference points for next move
+  // Calculate the distance from center to determine rotation sensitivity
+  const distanceFromCenter = Math.sqrt(
+    Math.pow(touch.clientX - wheelCenterX, 2) + 
+    Math.pow(touch.clientY - wheelCenterY, 2)
+  )
+  const maxDistance = Math.min(wheelRect.width, wheelRect.height) / 2
+  const sensitivity = Math.min(distanceFromCenter / maxDistance, 1) * 0.8
+  
+  // Apply rotation with sensitivity adjustment
+  const rotationAmount = angleDiff * sensitivity
+  
+  // Store the last movement for momentum
+  lastTouchMoveAngle.value = rotationAmount
+  lastTouchMoveTime.value = Date.now()
+  
+  // Update reference points
   touchStartX.value = touch.clientX
   touchStartY.value = touch.clientY
   
-  rotateWheel(angleDiff)
+  rotateWheel(rotationAmount)
 }
 
 function handleTouchEnd() {
   if (!isTouching.value || isExpanded.value) return
   isTouching.value = false
-  const touchDuration = Date.now() - touchStartTime.value
   
-  if (touchDuration < 300) {
-    // Reduced momentum effect
-    const momentum = (lastTouchMoveAngle.value - touchStartTime.value) / touchDuration
-    const maxMomentum = 30 // Limit maximum momentum
+  const touchDuration = Date.now() - touchStartTime.value
+  const timeSinceLastMove = Date.now() - lastTouchMoveTime.value
+  
+  // Only apply momentum if the touch ended recently and wasn't too slow
+  if (touchDuration < 300 && timeSinceLastMove < 50) {
+    const momentum = lastTouchMoveAngle.value * (300 - touchDuration) / 300
+    const maxMomentum = 25 // Reduced maximum momentum
     const limitedMomentum = Math.min(Math.abs(momentum), maxMomentum) * Math.sign(momentum)
     
     gsap.to([outerGroupRef.value, middleGroupRef.value, innerGroupRef.value], {
-      rotation: "+=" + (limitedMomentum * 2), // Reduced multiplication factor
-      duration: 0.8, // Longer duration for smoother deceleration
+      rotation: "+=" + limitedMomentum,
+      duration: 1,
       ease: "power2.out",
       svgOrigin: "0 0"
     })
@@ -444,7 +468,7 @@ onUnmounted(() => {
            transition: 'opacity 0.3s ease'
          }">
     </div>
-    <div class="emotion-details fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white w-[95vw] max-w-[1200px]"
+    <div class="emotion-details fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white w-[95vw] max-w-[1200px] max-h-[80vh] overflow-y-auto custom-scrollbar"
          :style="{ 
            zIndex: isExpanded ? 20 : -1,
            opacity: isExpanded ? 1 : 0,
@@ -487,6 +511,7 @@ onUnmounted(() => {
   background-color: #f5f5f5; /* Match the wheel's background color */
   position: relative;
   z-index: 1;
+  overflow: hidden;
 }
 
 /* Remove the media query for margin-top since we don't need it anymore */
@@ -606,4 +631,43 @@ blockquote {
 .close-button {
   z-index: 60;
 }
+
+/* Add custom scrollbar styles */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+}
+
+/* Prevent wheel event from affecting background when overlay is active */
+.wheel-container {
+  /* ... existing styles ... */
+  overflow: hidden;
+}
+
+/* Add padding to ensure content isn't cut off at the bottom */
+.emotion-details {
+  padding: 2rem 1rem;
+  margin: 2rem 0;
+}
+
+@media (max-width: 768px) {
+  .emotion-details {
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+}
 </style>
+

@@ -505,16 +505,23 @@ onUnmounted(() => {
 
 <style scoped>
 .wheel-container {
-  padding-top: 0;
-  margin-top: 0; /* Remove the negative margin */
-  min-height: 100vh; /* Ensure full viewport height */
-  background-color: #f5f5f5; /* Match the wheel's background color */
-  position: relative;
+  position: fixed; /* Change from relative to fixed */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
   z-index: 1;
   overflow: hidden;
 }
 
-/* Remove the media query for margin-top since we don't need it anymore */
+/* Remove these properties as they're no longer needed */
+/* padding-top: 0;
+   margin-top: 0;
+   min-height: 100vh; */
 
 /* Enhance text visibility */
 text {

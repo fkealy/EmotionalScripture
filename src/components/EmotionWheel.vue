@@ -422,7 +422,7 @@ function handleTouchEnd() {
   // Only apply momentum if the touch ended recently and wasn't too slow
   if (touchDuration < 300 && timeSinceLastMove < 50) {
     const momentum = lastTouchMoveAngle.value * (300 - touchDuration) / 300
-    const maxMomentum = 25 // Reduced maximum momentum
+    const maxMomentum = 40 // Reduced maximum momentum
     const limitedMomentum = Math.min(Math.abs(momentum), maxMomentum) * Math.sign(momentum)
     
     gsap.to([outerGroupRef.value, middleGroupRef.value, innerGroupRef.value], {

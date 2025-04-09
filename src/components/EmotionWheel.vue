@@ -23,6 +23,82 @@ interface Emotion {
   }[]
 }
 
+// Wheel configuration
+const WHEEL_CONFIG = {
+  innerRadius: 50,
+  middleRadius: 100,
+  outerRadius: 190,
+  maxRadius: 290,
+  strokeWidth: 0.5,
+  longWordThreshold: 10,
+  bubblePadding: 15 // Slightly smaller padding just for the viewBox
+} as const
+
+// Animation configuration
+type Duration = 0.2 | 0.3 | 0.5 | 0.7 | 1.0 | 1.5 | 2.0 | 2.5
+
+const ANIMATION_CONFIG = {
+  rotation: {
+    duration: 0.2 as Duration,
+    ease: "power1.out"
+  },
+  expansion: {
+    duration: {
+      default: 1.5 as Duration,
+      uncomfortable: 2.0 as Duration,
+      playful: 2.5 as Duration
+    },
+    ease: "power2.inOut"
+  },
+  overlay: {
+    duration: {
+      desktop: 1.0 as Duration,
+      mobile: 1.5 as Duration
+    },
+    ease: "power2.inOut"
+  },
+  momentum: {
+    threshold: 100,
+    maxValue: 120,
+    baseFactor: 2,
+    physics: {
+      velocityMultiplier: 8.0,
+      maxRotations: 8,
+      minDuration: 3.0,
+      maxDuration: 10.0,
+      phases: {
+        initial: {
+          portion: 0.3,
+          timePortion: 0.15
+        },
+        middle: {
+          portion: 0.4,
+          timePortion: 0.35
+        },
+        final: {
+          portion: 0.3,
+          timePortion: 0.5
+        }
+      }
+    }
+  },
+  segment: {
+    hover: {
+      scale: 1.02,
+      opacity: 0.8,
+      duration: 0.3
+    },
+    click: {
+      bubbleDuration: 0.4,
+      bubbleScale: 1.05,
+      bubbleEase: "elastic.out(1, 0.3)"
+    }
+  }
+} as const
+
+// Mobile detection
+const isMobileDevice = ref(false)
+
 const currentRotation = ref(0)
 const isExpanded = ref(false)
 const expandedEmotion = ref<Emotion | null>(null)
@@ -39,6 +115,18 @@ const isTouching = ref(false)
 const touchStartTime = ref(0)
 const lastTouchMoveTime = ref(0)
 const lastTouchMoveAngle = ref(0)
+const touchMoved = ref(false)
+const tapTimeout = ref<number | null>(null)
+const TOUCH_CONFIG = {
+  tapThreshold: 10, // pixels
+  tapTimeout: 200 // milliseconds
+} as const
+
+// Add timeline ref at the top with other refs
+const activeSpinTimeline = ref<gsap.core.Timeline | null>(null)
+
+// Add a ref to track momentum timeline
+const momentumTimeline = ref<gsap.core.Timeline | null>(null)
 
 function polarToCartesian(centerX: number, centerY: number, radius: number, angleInDegrees: number) {
   const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0
@@ -73,71 +161,87 @@ function createSegmentPath(x: number, y: number, radius: number, startAngle: num
   ].join(" ")
 }
 
+function createBubbledSegmentPath(x: number, y: number, radius: number, startAngle: number, endAngle: number, bubbleAmount: number = 0) {
+  const start = polarToCartesian(x, y, radius * (1 + bubbleAmount), startAngle)
+  const end = polarToCartesian(x, y, radius * (1 + bubbleAmount), endAngle)
+  const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1"
+  
+  // Calculate control points for the inner curve (from center)
+  const startControl = polarToCartesian(x, y, radius * 0.2, (startAngle + endAngle) / 2)
+  
+  return [
+    "M", x, y,
+    "Q", startControl.x, startControl.y, start.x, start.y,
+    "A", radius * (1 + bubbleAmount), radius * (1 + bubbleAmount), 0, largeArcFlag, 1, end.x, end.y,
+    "Q", startControl.x, startControl.y, x, y,
+    "Z"
+  ].join(" ")
+}
+
 function rotateWheel(angle: number) {
   if (isExpanded.value) return
   
-  // Add smoothing to the rotation with consistent behavior
-  gsap.to([outerGroupRef.value, middleGroupRef.value, innerGroupRef.value], {
-    rotation: "+=" + angle,
-    duration: 0.2, // Reduced duration for more responsive feel
-    ease: "power1.out", // Changed ease for more natural movement
-    svgOrigin: "0 0"
+  // Kill any existing spin animation
+  if (activeSpinTimeline.value) {
+    activeSpinTimeline.value.kill()
+    activeSpinTimeline.value = null
+  }
+  
+  requestAnimationFrame(() => {
+    const currentRotation = gsap.getProperty(outerGroupRef.value, "rotation") as number || 0
+    gsap.to([outerGroupRef.value, middleGroupRef.value, innerGroupRef.value], {
+      rotation: currentRotation + angle,
+      duration: 0.15,
+      ease: "none",
+      svgOrigin: "0 0",
+      overwrite: "auto" // Use GSAP's smart overwrite
+    })
   })
 }
 
 function expandSegment(emotion: Emotion, angle: number) {
   if (isExpanded.value) return
+  
+  // Reset any other segments that might be in a bubbled state
+  const segments = document.querySelectorAll('.segment-path')
+  segments.forEach(segment => {
+    if (segment !== event?.target) {  // Don't reset the clicked segment
+      const normalPath = segment.getAttribute('data-normal-path')
+      if (normalPath) {
+        gsap.set(segment, {
+          d: normalPath,
+          scale: 1,
+          opacity: 1,
+          svgOrigin: "0 0"
+        })
+      }
+    }
+  })
+
   isExpanded.value = true
   expandedEmotion.value = emotion
-
-  let rotationAngle = -angle
-  rotationAngle = ((rotationAngle % 360) + 360) % 360
-  if (rotationAngle > 180) rotationAngle -= 360
-
-  let rotationDuration = 1.5
-
-  const isUncomfortable = emotion.parent === "Uncomfortable Emotions" || 
-                          ["Sad", "Scared", "Angry", "Embarrassed"].includes(emotion.parent)
-  const isPlayful = emotion.name === "Playful" || emotion.parent === "Playful"
-
-  if (isUncomfortable) {
-    rotationDuration = 2
-  } else if (isPlayful) {
-    rotationAngle -= 360
-    rotationDuration = 2.5
-  }
 
   // Determine if we're on a mobile device
   const isMobile = window.innerWidth <= 768
 
-  gsap.to([outerGroupRef.value, middleGroupRef.value, innerGroupRef.value], {
-    rotation: rotationAngle,
-    duration: rotationDuration,
-    ease: "power2.inOut",
-    svgOrigin: "0 0",
-    onComplete: () => {
-      currentRotation.value = rotationAngle % 360
-      
-      gsap.to('.close-button', {
-        opacity: 1,
-        duration: 0.3,
-        display: 'flex'
-      })
+  // Show the overlay and content
+  gsap.to('.close-button', {
+    opacity: 1,
+    duration: 0.3,
+    display: 'flex'
+  })
 
-      // Adjust animation duration based on device
-      gsap.to(overlayRef.value, {
-        width: '300vmax',
-        height: '300vmax',
-        opacity: 0.9,
-        duration: isMobile ? 1.5 : 1, // Slower on mobile
-        ease: "power2.inOut",
-        onComplete: () => {
-          gsap.to(['.emotion-details', '.scripture-container'], {
-            opacity: 1,
-            duration: isMobile ? 0.7 : 0.5, // Slower fade in on mobile
-            delay: 0.2
-          })
-        }
+  gsap.to(overlayRef.value, {
+    width: '300vmax',
+    height: '300vmax',
+    opacity: 0.9,
+    duration: isMobile ? ANIMATION_CONFIG.overlay.duration.mobile : ANIMATION_CONFIG.overlay.duration.desktop,
+    ease: ANIMATION_CONFIG.overlay.ease,
+    onComplete: () => {
+      gsap.to(['.emotion-details', '.scripture-container'], {
+        opacity: 1,
+        duration: isMobile ? 0.7 : 0.5,
+        delay: 0.2
       })
     }
   })
@@ -146,6 +250,22 @@ function expandSegment(emotion: Emotion, angle: number) {
 function contractSegment() {
   if (!isExpanded.value) return
   
+  // Reset all segments to their normal state first
+  const segments = document.querySelectorAll('.segment-path')
+  segments.forEach(segment => {
+    const normalPath = segment.getAttribute('data-normal-path')
+    if (normalPath) {
+      gsap.to(segment, {
+        d: normalPath,
+        scale: 1,
+        opacity: 1,
+        duration: 0.3,
+        ease: "power2.inOut",
+        svgOrigin: "0 0"
+      })
+    }
+  })
+
   // Fade out the text and scripture data
   gsap.to(['.emotion-details', '.scripture-container', '.close-button'], {
     opacity: 0,
@@ -162,14 +282,6 @@ function contractSegment() {
         onComplete: () => {
           isExpanded.value = false
           expandedEmotion.value = null
-
-          // Rotate the wheel back to its original position
-          gsap.to([outerGroupRef.value, middleGroupRef.value, innerGroupRef.value], {
-            rotation: 0,
-            duration: 1.5,
-            ease: "power2.inOut",
-            svgOrigin: "0 0"
-          })
         }
       })
     }
@@ -178,101 +290,125 @@ function contractSegment() {
 
 function createSegments(emotions: any[], innerRadius: number, outerRadius: number, group: SVGGElement) {
   const angleStep = 360 / emotions.length
-  
-  // Create single defs element at the start
+  const startOffset = -90 // Start at -90 degrees (left side) for Uncomfortable Emotions
   const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs")
   
-  // Add paper texture filter
-  const filter = document.createElementNS("http://www.w3.org/2000/svg", "filter")
-  filter.setAttribute("id", "paper-texture")
-  filter.innerHTML = `
-    <feTurbulence 
-      type="turbulence" 
-      baseFrequency="0.5" 
-      numOctaves="2" 
-      seed="1" 
-      stitchTiles="stitch" 
-      result="noise"
-    />
-    <feDiffuseLighting in="noise" lighting-color="#ffffff" surfaceScale="0.3" result="diffLight">
-      <feDistantLight azimuth="45" elevation="65"/>
-    </feDiffuseLighting>
-    <feComposite operator="arithmetic" k1="1.1" k2="0.2" k3="0.1" k4="0" 
-                 in="SourceGraphic" in2="diffLight" result="textured"/>
-    <feGaussianBlur in="textured" stdDeviation="0.4" result="blurred"/>
-    <feBlend mode="soft-light" in="SourceGraphic" in2="blurred" result="withTexture"/>
-    <feColorMatrix type="matrix" in="withTexture"
-      values="0.95 0   0   0   0.02
-              0   0.95 0   0   0.02
-              0   0   0.95 0   0.02
-              0   0   0   0.95 0"/>
-  `
-  defs.appendChild(filter)
-  
-  // Create gradients for inner emotions
-  if (innerRadius === 50) {
-    // Gradient for Uncomfortable Emotions
-    const gradientUncomfortable = document.createElementNS("http://www.w3.org/2000/svg", "radialGradient")
+  // Create base gradients for inner emotions only
+  if (innerRadius === WHEEL_CONFIG.innerRadius) {
+    const gradientUncomfortable = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient")
     gradientUncomfortable.setAttribute("id", "gradientUncomfortable")
+    gradientUncomfortable.setAttribute("gradientUnits", "userSpaceOnUse")
     gradientUncomfortable.innerHTML = `
       <stop offset="0%" stop-color="#9370DB" />
-      <stop offset="33%" stop-color="#6495ED" />
-      <stop offset="66%" stop-color="#87CEEB" />
-      <stop offset="100%" stop-color="#B0E0E6" />
+      <stop offset="100%" stop-color="#6495ED" />
     `
     defs.appendChild(gradientUncomfortable)
     
-    // Gradient for Comfortable Emotions
-    const gradientComfortable = document.createElementNS("http://www.w3.org/2000/svg", "radialGradient")
+    const gradientComfortable = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient")
     gradientComfortable.setAttribute("id", "gradientComfortable")
+    gradientComfortable.setAttribute("gradientUnits", "userSpaceOnUse")
     gradientComfortable.innerHTML = `
       <stop offset="0%" stop-color="#FFE4B5" />
-      <stop offset="33%" stop-color="#FFDAB9" />
-      <stop offset="66%" stop-color="#FFA07A" />
-      <stop offset="100%" stop-color="#E9967A" />
+      <stop offset="100%" stop-color="#FFA07A" />
     `
     defs.appendChild(gradientComfortable)
   }
   
-  // Add defs to group
   group.appendChild(defs)
   
   emotions.forEach((emotion, index) => {
-    const startAngle = index * angleStep
-    const endAngle = (index + 1) * angleStep
+    const startAngle = startOffset + (index * angleStep)
+    const endAngle = startOffset + ((index + 1) * angleStep)
     
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path")
-    path.setAttribute("d", createSegmentPath(0, 0, outerRadius, startAngle, endAngle))
+    const normalPath = createSegmentPath(0, 0, outerRadius, startAngle, endAngle)
+    const bubbledPath = createBubbledSegmentPath(0, 0, outerRadius, startAngle, endAngle)
     
-    // Apply gradient to inner emotions
-    if (innerRadius === 50) {
+    path.setAttribute("d", normalPath)
+    path.setAttribute("data-normal-path", normalPath)
+    path.setAttribute("data-bubbled-path", bubbledPath)
+    
+    if (innerRadius === WHEEL_CONFIG.innerRadius) {
       path.setAttribute("fill", `url(#gradient${emotion.name.split('\n')[0]})`)
     } else {
       path.setAttribute("fill", emotion.color)
     }
     
     path.setAttribute("stroke", "white")
-    path.setAttribute("class", "cursor-pointer transition-transform duration-200 hover:scale-102")
+    path.setAttribute("stroke-width", WHEEL_CONFIG.strokeWidth.toString())
+    path.setAttribute("class", "cursor-pointer segment-path")
     
-    // Apply a lighter paper texture
-    path.setAttribute("style", "filter: url(#paper-texture) saturate(0.95)")
+    // Add hover animation using GSAP
+    path.addEventListener('mouseenter', () => {
+      if (!isExpanded.value) {
+        gsap.to(path, {
+          scale: ANIMATION_CONFIG.segment.hover.scale,
+          opacity: ANIMATION_CONFIG.segment.hover.opacity,
+          duration: ANIMATION_CONFIG.segment.hover.duration,
+          ease: "power2.out",
+          svgOrigin: "0 0"
+        })
+      }
+    })
+    
+    path.addEventListener('mouseleave', () => {
+      if (!isExpanded.value) {
+        gsap.to(path, {
+          scale: 1,
+          opacity: 1,
+          duration: ANIMATION_CONFIG.segment.hover.duration,
+          ease: "power2.inOut",
+          svgOrigin: "0 0"
+        })
+      }
+    })
     
     path.addEventListener('click', (e) => {
       e.stopPropagation()
-      const segmentAngle = startAngle + (angleStep / 2)
-      expandSegment(emotion, segmentAngle)
+      if (!isExpanded.value) {
+        // Reset any other segments first
+        const otherSegments = document.querySelectorAll('.segment-path')
+        otherSegments.forEach(segment => {
+          if (segment !== path) {
+            const normalPath = segment.getAttribute('data-normal-path')
+            if (normalPath) {
+              gsap.set(segment, {
+                d: normalPath,
+                scale: 1,
+                opacity: 1,
+                svgOrigin: "0 0"
+              })
+            }
+          }
+        })
+
+        // Bubble animation
+        const timeline = gsap.timeline({
+          onComplete: () => {
+            const segmentAngle = startAngle + (angleStep / 2)
+            expandSegment(emotion, segmentAngle)
+          }
+        })
+
+        timeline.to(path, {
+          d: bubbledPath,
+          scale: ANIMATION_CONFIG.segment.click.bubbleScale,
+          duration: ANIMATION_CONFIG.segment.click.bubbleDuration,
+          ease: ANIMATION_CONFIG.segment.click.bubbleEase
+        })
+      }
     })
     
     group.appendChild(path)
-
-    // Modified text sizing logic
+    
+    // Text sizing logic
     const textRadius = (innerRadius + outerRadius) / 2
     const textAngle = startAngle + (angleStep / 2)
     const textPos = polarToCartesian(0, 0, textRadius, textAngle)
-    
     const textGroup = document.createElementNS("http://www.w3.org/2000/svg", "g")
+    const isLongWord = emotion.name.length > WHEEL_CONFIG.longWordThreshold
     
-    if (innerRadius === 50) {
+    if (innerRadius === WHEEL_CONFIG.innerRadius) {
       // For inner emotions, curved text
       const textPathRadius = (innerRadius + outerRadius) / 2
       const textArcStart = startAngle + 5
@@ -302,10 +438,19 @@ function createSegments(emotions: any[], innerRadius: number, outerRadius: numbe
       textGroup.setAttribute("transform", `translate(${textPos.x}, ${textPos.y}) rotate(${textAngle + (outerRadius > 200 ? 90 : 0)})`)
       
       const text = document.createElementNS("http://www.w3.org/2000/svg", "text")
-      const textSizeClass = outerRadius > 200 ? 
+      let baseClass = outerRadius > 200 ? 
         "text-base md:text-sm font-bold fill-current text-gray-800" : 
         "text-lg md:text-base font-bold fill-current text-gray-800"
-      text.setAttribute("class", textSizeClass)
+        
+      text.setAttribute("class", baseClass)
+      
+      // Only apply size reduction for long words
+      if (isLongWord) {
+        const segmentWidth = Math.abs(2 * Math.sin(angleStep * Math.PI / 360) * textRadius)
+        const fontSize = Math.max(12, segmentWidth / (emotion.name.length * 0.7))
+        text.style.fontSize = `${fontSize}px`
+      }
+      
       text.setAttribute("text-anchor", "middle")
       text.setAttribute("dominant-baseline", "middle")
       text.textContent = emotion.name
@@ -315,6 +460,26 @@ function createSegments(emotions: any[], innerRadius: number, outerRadius: numbe
     
     group.appendChild(textGroup)
   })
+}
+
+// Helper function to adjust colors
+function adjustColor(color: string, amount: number): string {
+  // Remove the '#' if present
+  color = color.replace('#', '')
+  
+  // Convert to RGB
+  const r = parseInt(color.substring(0, 2), 16)
+  const g = parseInt(color.substring(2, 4), 16)
+  const b = parseInt(color.substring(4, 6), 16)
+  
+  // Adjust each channel
+  const newR = Math.max(0, Math.min(255, r + amount))
+  const newG = Math.max(0, Math.min(255, g + amount))
+  const newB = Math.max(0, Math.min(255, b + amount))
+  
+  // Convert to hex with zero padding
+  const toHex = (n: number): string => ('0' + n.toString(16)).slice(-2)
+  return `#${toHex(newR)}${toHex(newG)}${toHex(newB)}`
 }
 
 function initializeWheel() {
@@ -341,11 +506,23 @@ function initializeWheel() {
   wheelRef.value.appendChild(centerCircle)
 }
 
+// Utility functions
+function debounce<T extends (...args: any[]) => void>(fn: T, delay: number): T {
+  let timeoutId: ReturnType<typeof setTimeout>
+  return function(this: any, ...args: Parameters<T>) {
+    clearTimeout(timeoutId)
+    timeoutId = setTimeout(() => fn.apply(this, args), delay)
+  } as T
+}
+
+// Event handlers with performance optimizations
 function handleWheel(event: WheelEvent) {
   event.preventDefault()
-  const scrollAmount = event.deltaY
-  const rotationAmount = scrollAmount * 0.5
-  rotateWheel(rotationAmount)
+  if (!isExpanded.value) {
+    const scrollAmount = event.deltaY
+    const rotationAmount = scrollAmount * 0.5
+    requestAnimationFrame(() => rotateWheel(rotationAmount))
+  }
 }
 
 function handleKeyDown(event: KeyboardEvent) {
@@ -362,12 +539,34 @@ function handleTouchStart(event: TouchEvent) {
   isTouching.value = true
   touchStartTime.value = Date.now()
   lastTouchMoveTime.value = touchStartTime.value
+  touchMoved.value = false
 }
 
 function handleTouchMove(event: TouchEvent) {
   if (!isTouching.value || isExpanded.value) return
-  event.preventDefault()
+  
   const touch = event.touches[0]
+  const deltaX = touch.clientX - touchStartX.value
+  const deltaY = touch.clientY - touchStartY.value
+  const moveDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+
+  // If movement is less than threshold, don't do anything yet
+  if (moveDistance < TOUCH_CONFIG.tapThreshold) {
+    return
+  }
+
+  // Kill any existing momentum animation
+  if (momentumTimeline.value) {
+    momentumTimeline.value.kill()
+    momentumTimeline.value = null
+  }
+
+  // Once we've moved beyond the threshold, prevent tap and handle drag
+  touchMoved.value = true
+  event.preventDefault()
+  
+  const now = Date.now()
+  if (now - lastTouchMoveTime.value < 16) return // Cap at ~60fps
   
   const wheelRect = wheelRef.value?.getBoundingClientRect()
   if (!wheelRect) return
@@ -375,7 +574,6 @@ function handleTouchMove(event: TouchEvent) {
   const wheelCenterX = wheelRect.left + wheelRect.width / 2
   const wheelCenterY = wheelRect.top + wheelRect.height / 2
   
-  // Calculate angles from center to touch points
   const startAngle = Math.atan2(
     touchStartY.value - wheelCenterY,
     touchStartX.value - wheelCenterX
@@ -385,67 +583,123 @@ function handleTouchMove(event: TouchEvent) {
     touch.clientX - wheelCenterX
   )
   
-  // Calculate the shortest angular distance
   let angleDiff = (currentAngle - startAngle) * (180 / Math.PI)
   if (angleDiff > 180) angleDiff -= 360
   if (angleDiff < -180) angleDiff += 360
   
-  // Calculate the distance from center to determine rotation sensitivity
   const distanceFromCenter = Math.sqrt(
     Math.pow(touch.clientX - wheelCenterX, 2) + 
     Math.pow(touch.clientY - wheelCenterY, 2)
   )
   const maxDistance = Math.min(wheelRect.width, wheelRect.height) / 2
-  const sensitivity = Math.min(distanceFromCenter / maxDistance, 1) * 0.8
+  const sensitivity = Math.min(distanceFromCenter / maxDistance, 1) * 2.5
   
-  // Apply rotation with sensitivity adjustment
   const rotationAmount = angleDiff * sensitivity
   
-  // Store the last movement for momentum
-  lastTouchMoveAngle.value = rotationAmount
-  lastTouchMoveTime.value = Date.now()
+  // Enhanced velocity calculation with smoothing
+  const timeDelta = Math.max(now - lastTouchMoveTime.value, 1)
+  const instantVelocity = (rotationAmount / timeDelta) * 100
   
-  // Update reference points
+  // Smooth velocity tracking
+  const smoothingFactor = 0.7
+  lastTouchMoveAngle.value = instantVelocity * (1 - smoothingFactor) + 
+                            (lastTouchMoveAngle.value || 0) * smoothingFactor
+  
+  lastTouchMoveTime.value = now
   touchStartX.value = touch.clientX
   touchStartY.value = touch.clientY
   
-  rotateWheel(rotationAmount)
+  requestAnimationFrame(() => rotateWheel(rotationAmount))
 }
 
-function handleTouchEnd() {
-  if (!isTouching.value || isExpanded.value) return
+function handleTouchEnd(event: TouchEvent) {
+  if (!isTouching.value) return
   isTouching.value = false
   
-  const touchDuration = Date.now() - touchStartTime.value
-  const timeSinceLastMove = Date.now() - lastTouchMoveTime.value
+  const timeSinceStart = Date.now() - touchStartTime.value
   
-  // Only apply momentum if the touch ended recently and wasn't too slow
-  if (touchDuration < 300 && timeSinceLastMove < 50) {
-    const momentum = lastTouchMoveAngle.value * (300 - touchDuration) / 300
-    const maxMomentum = 40 // Reduced maximum momentum
-    const limitedMomentum = Math.min(Math.abs(momentum), maxMomentum) * Math.sign(momentum)
+  // If this was a tap (minimal movement and short duration)
+  if (!touchMoved.value && timeSinceStart < TOUCH_CONFIG.tapTimeout) {
+    // This was a tap, let the click event handle it
+    return
+  }
+  
+  // Handle momentum for drag gestures
+  const timeSinceLastMove = Date.now() - lastTouchMoveTime.value
+  if (timeSinceLastMove < 150) {
+    // Kill any existing momentum animation
+    if (momentumTimeline.value) {
+      momentumTimeline.value.kill()
+      momentumTimeline.value = null
+    }
+
+    const velocity = lastTouchMoveAngle.value
+    const velocityMagnitude = Math.abs(velocity)
     
-    gsap.to([outerGroupRef.value, middleGroupRef.value, innerGroupRef.value], {
-      rotation: "+=" + limitedMomentum,
-      duration: 1,
-      ease: "power2.out",
-      svgOrigin: "0 0"
+    const momentumBase = velocityMagnitude * ANIMATION_CONFIG.momentum.physics.velocityMultiplier
+    const maxMomentum = 360 * ANIMATION_CONFIG.momentum.physics.maxRotations
+    const momentum = Math.min(momentumBase, maxMomentum) * Math.sign(velocity)
+    
+    const { minDuration, maxDuration } = ANIMATION_CONFIG.momentum.physics
+    const momentumDuration = Math.min(maxDuration, 
+      minDuration + (Math.abs(momentum) / maxMomentum) * (maxDuration - minDuration))
+    
+    const timeline = gsap.timeline({
+      onComplete: () => {
+        momentumTimeline.value = null
+      },
+      onInterrupt: () => {
+        momentumTimeline.value = null
+      },
+      defaults: {
+        svgOrigin: "0 0",
+        overwrite: "auto"
+      }
+    })
+    
+    momentumTimeline.value = timeline
+    const wheelElements = [outerGroupRef.value, middleGroupRef.value, innerGroupRef.value]
+    
+    // Single smooth deceleration instead of phases
+    timeline.to(wheelElements, {
+      rotation: "+=" + momentum,
+      duration: momentumDuration,
+      ease: "power2.out"
     })
   }
+
+  // Reset touch state
+  lastTouchMoveAngle.value = 0
+  touchMoved.value = false
 }
 
+const debouncedHandleResize = debounce(() => {
+  isMobileDevice.value = window.innerWidth <= 768
+}, 250)
+
+// Lifecycle hooks with cleanup
 onMounted(() => {
   initializeWheel()
   window.addEventListener('wheel', handleWheel, { passive: false })
   window.addEventListener('keydown', handleKeyDown)
+  window.addEventListener('resize', debouncedHandleResize)
   wheelRef.value?.addEventListener('touchstart', handleTouchStart, { passive: false })
   wheelRef.value?.addEventListener('touchmove', handleTouchMove, { passive: false })
   wheelRef.value?.addEventListener('touchend', handleTouchEnd)
 })
 
 onUnmounted(() => {
+  if (activeSpinTimeline.value) {
+    activeSpinTimeline.value.kill()
+    activeSpinTimeline.value = null
+  }
+  if (momentumTimeline.value) {
+    momentumTimeline.value.kill()
+    momentumTimeline.value = null
+  }
   window.removeEventListener('wheel', handleWheel)
   window.removeEventListener('keydown', handleKeyDown)
+  window.removeEventListener('resize', debouncedHandleResize)
   wheelRef.value?.removeEventListener('touchstart', handleTouchStart)
   wheelRef.value?.removeEventListener('touchmove', handleTouchMove)
   wheelRef.value?.removeEventListener('touchend', handleTouchEnd)
@@ -454,8 +708,12 @@ onUnmounted(() => {
 
 <template>
   <div class="wheel-container w-screen h-screen flex justify-center items-center overflow-hidden relative">
-    <svg ref="wheelRef" class="w-[95%] h-[95%] md:w-4/5 md:h-4/5 max-w-[95vmin] md:max-w-[80vmin] max-h-[95vmin] md:max-h-[80vmin]" viewBox="-300 -300 600 600">
-      <circle cx="0" cy="0" r="290" fill="#f5f5f5" stroke="#e0e0e0"/>
+    <svg ref="wheelRef" 
+         class="w-[95%] h-[95%] md:w-4/5 md:h-4/5 max-w-[95vmin] md:max-w-[80vmin] max-h-[95vmin] md:max-h-[80vmin]" 
+         :viewBox="`-${WHEEL_CONFIG.maxRadius + WHEEL_CONFIG.bubblePadding} -${WHEEL_CONFIG.maxRadius + WHEEL_CONFIG.bubblePadding} ${(WHEEL_CONFIG.maxRadius + WHEEL_CONFIG.bubblePadding) * 2} ${(WHEEL_CONFIG.maxRadius + WHEEL_CONFIG.bubblePadding) * 2}`">
+      <g class="wheel-segments">
+        <!-- segments will be added here -->
+      </g>
     </svg>
     <div ref="overlayRef"
          class="fixed top-1/2 left-1/2 w-0 h-0 rounded-full transform -translate-x-1/2 -translate-y-1/2"
@@ -505,7 +763,7 @@ onUnmounted(() => {
 
 <style scoped>
 .wheel-container {
-  position: fixed; /* Change from relative to fixed */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
@@ -518,10 +776,17 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
-/* Remove these properties as they're no longer needed */
-/* padding-top: 0;
-   margin-top: 0;
-   min-height: 100vh; */
+/* Update segment styling */
+.segment-path {
+  transition: filter 0.3s ease;
+  filter: brightness(1);
+  transform-origin: center;
+  will-change: transform, opacity, d;
+}
+
+.wheel-segments {
+  transform-origin: center;
+}
 
 /* Enhance text visibility */
 text {
@@ -534,18 +799,16 @@ text {
 
 @media (max-width: 640px) {
   text {
-    stroke-width: 4px; /* Thicker stroke on mobile for better visibility */
+    stroke-width: 4px;
   }
 }
 
-/* Simplify the hover effect */
-path {
-  transition: all 0.3s ease;
+/* Enhanced segment styling */
+.segment-path:hover {
+  filter: brightness(1.1) contrast(1.05);
 }
 
-path:hover {
-  filter: url(#paper-texture) brightness(1.1);
-}
+/* Rest of your existing styles... */
 
 .scripture-nav-btn {
   position: fixed;

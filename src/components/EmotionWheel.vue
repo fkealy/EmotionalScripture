@@ -62,10 +62,10 @@ const ANIMATION_CONFIG = {
     maxValue: 120,
     baseFactor: 2,
     physics: {
-      velocityMultiplier: 8.0,
-      maxRotations: 8,
-      minDuration: 3.0,
-      maxDuration: 10.0,
+      velocityMultiplier: 12.0,
+      maxRotations: 6,
+      minDuration: 2.0,
+      maxDuration: 8.0,
       phases: {
         initial: {
           portion: 0.3,
@@ -81,6 +81,12 @@ const ANIMATION_CONFIG = {
         }
       }
     }
+  },
+  touch: {
+    sensitivity: 1.8,
+    velocitySmoothing: 0.6,
+    minMovement: 2,
+    maxSensitivity: 3.0
   },
   segment: {
     hover: {
@@ -187,15 +193,14 @@ function rotateWheel(angle: number) {
     activeSpinTimeline.value = null
   }
   
-  requestAnimationFrame(() => {
-    const currentRotation = gsap.getProperty(outerGroupRef.value, "rotation") as number || 0
-    gsap.to([outerGroupRef.value, middleGroupRef.value, innerGroupRef.value], {
-      rotation: currentRotation + angle,
-      duration: 0.15,
-      ease: "none",
-      svgOrigin: "0 0",
-      overwrite: "auto" // Use GSAP's smart overwrite
-    })
+  const currentRotation = gsap.getProperty(outerGroupRef.value, "rotation") as number || 0
+  
+  gsap.to([outerGroupRef.value, middleGroupRef.value, innerGroupRef.value], {
+    rotation: currentRotation + angle,
+    duration: 0.1,
+    ease: "none",
+    transformOrigin: "50% 50%",
+    overwrite: "auto"
   })
 }
 
@@ -550,23 +555,20 @@ function handleTouchMove(event: TouchEvent) {
   const deltaY = touch.clientY - touchStartY.value
   const moveDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
 
-  // If movement is less than threshold, don't do anything yet
-  if (moveDistance < TOUCH_CONFIG.tapThreshold) {
+  if (moveDistance < ANIMATION_CONFIG.touch.minMovement) {
     return
   }
 
-  // Kill any existing momentum animation
   if (momentumTimeline.value) {
     momentumTimeline.value.kill()
     momentumTimeline.value = null
   }
 
-  // Once we've moved beyond the threshold, prevent tap and handle drag
   touchMoved.value = true
   event.preventDefault()
   
   const now = Date.now()
-  if (now - lastTouchMoveTime.value < 16) return // Cap at ~60fps
+  if (now - lastTouchMoveTime.value < 16) return
   
   const wheelRect = wheelRef.value?.getBoundingClientRect()
   if (!wheelRect) return
@@ -592,16 +594,20 @@ function handleTouchMove(event: TouchEvent) {
     Math.pow(touch.clientY - wheelCenterY, 2)
   )
   const maxDistance = Math.min(wheelRect.width, wheelRect.height) / 2
-  const sensitivity = Math.min(distanceFromCenter / maxDistance, 1) * 2.5
+  
+  const baseSensitivity = ANIMATION_CONFIG.touch.sensitivity
+  const distanceFactor = Math.min(distanceFromCenter / maxDistance, 1)
+  const sensitivity = Math.min(
+    baseSensitivity + (distanceFactor * baseSensitivity),
+    ANIMATION_CONFIG.touch.maxSensitivity
+  )
   
   const rotationAmount = angleDiff * sensitivity
   
-  // Enhanced velocity calculation with smoothing
   const timeDelta = Math.max(now - lastTouchMoveTime.value, 1)
   const instantVelocity = (rotationAmount / timeDelta) * 100
   
-  // Smooth velocity tracking
-  const smoothingFactor = 0.7
+  const smoothingFactor = ANIMATION_CONFIG.touch.velocitySmoothing
   lastTouchMoveAngle.value = instantVelocity * (1 - smoothingFactor) + 
                             (lastTouchMoveAngle.value || 0) * smoothingFactor
   
@@ -609,6 +615,10 @@ function handleTouchMove(event: TouchEvent) {
   touchStartX.value = touch.clientX
   touchStartY.value = touch.clientY
   
+  // Get the current rotation
+  const currentRotation = gsap.getProperty(outerGroupRef.value, "rotation") as number || 0
+  
+  // Update the rotation using the rotateWheel function
   requestAnimationFrame(() => rotateWheel(rotationAmount))
 }
 
@@ -618,16 +628,12 @@ function handleTouchEnd(event: TouchEvent) {
   
   const timeSinceStart = Date.now() - touchStartTime.value
   
-  // If this was a tap (minimal movement and short duration)
   if (!touchMoved.value && timeSinceStart < TOUCH_CONFIG.tapTimeout) {
-    // This was a tap, let the click event handle it
     return
   }
   
-  // Handle momentum for drag gestures
   const timeSinceLastMove = Date.now() - lastTouchMoveTime.value
   if (timeSinceLastMove < 150) {
-    // Kill any existing momentum animation
     if (momentumTimeline.value) {
       momentumTimeline.value.kill()
       momentumTimeline.value = null
@@ -650,25 +656,20 @@ function handleTouchEnd(event: TouchEvent) {
       },
       onInterrupt: () => {
         momentumTimeline.value = null
-      },
-      defaults: {
-        svgOrigin: "0 0",
-        overwrite: "auto"
       }
     })
     
     momentumTimeline.value = timeline
     const wheelElements = [outerGroupRef.value, middleGroupRef.value, innerGroupRef.value]
     
-    // Single smooth deceleration instead of phases
     timeline.to(wheelElements, {
       rotation: "+=" + momentum,
       duration: momentumDuration,
-      ease: "power2.out"
+      ease: "power2.out",
+      transformOrigin: "50% 50%"
     })
   }
 
-  // Reset touch state
   lastTouchMoveAngle.value = 0
   touchMoved.value = false
 }

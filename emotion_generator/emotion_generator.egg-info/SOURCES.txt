@@ -1,0 +1,13 @@
+setup.py
+emotion_generator.egg-info/PKG-INFO
+emotion_generator.egg-info/SOURCES.txt
+emotion_generator.egg-info/dependency_links.txt
+emotion_generator.egg-info/requires.txt
+emotion_generator.egg-info/top_level.txt
+generators/__init__.py
+generators/emotion_generator.py
+schemas/__init__.py
+schemas/emotion_schema.py
+utils/__init__.py
+utils/color_mapper.py
+utils/logger.py

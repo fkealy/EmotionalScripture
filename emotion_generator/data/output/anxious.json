@@ -1,0 +1,216 @@
+{
+  "name": "Anxious",
+  "color": "#4169E1",
+  "text": "Anxiety is your mind trying to protect you.",
+  "parent": null,
+  "christianity": {
+    "summary": "From a Christian perspective, anxiety is viewed as an unideal state of mind that God wishes to correct, not as a sin. It reflects a lack of faith in God's sovereignty and provision, often stemming from a focus on uncertainty and attempts to control the future. Followers are encouraged to approach anxiety by recognizing it as a signal for spiritual reflection and growth, understanding that God is sovereign over anxiety and uses it to draw individuals closer to Him. Christians should seek to trust in God's faithfulness and handle anxiety by focusing on the present and praying without ceasing.",
+    "ideas": "Practical teachings for managing anxiety include recognizing it as a spiritual indicator, focusing on the present moment, and trusting in God's sovereignty. Christians are advised to cultivate dependence on God through prayer and faith, viewing anxiety as an opportunity for spiritual growth rather than allowing it to lead to sin. Key guidance includes applying biblical principles such as not worrying about tomorrow (Matthew 6:34), being anxious for nothing but in everything giving thanks (Philippians 4:6), and looking to the examples of biblical figures who faced anxiety but found strength in their faith.",
+    "quotes": [
+      {
+        "author": "Jesus",
+        "scriptureSource": "Matthew 6:25-34",
+        "sourceURL": "https://www.biblegateway.com/passage/?search=Matthew+6%3A25-34&version=NIV",
+        "quote": "Therefore I tell you, do not worry about your life, what you will eat or drink; or about your body, what you will wear. Is not life more than food, and the body more than clothes? Look at the birds of the air; they do not sow or reap or store away in barns, and yet your heavenly Father feeds them. Are you not much more valuable than they? Can any one of you by worrying add a single hour to your life?",
+        "relevance": "This passage emphasizes the futility of worry and encourages trust in God's provision. It addresses anxiety directly by highlighting the negative impact of excessive worry on one's spiritual walk.",
+        "tags": [
+          "anxiety",
+          "trust in God",
+          "biblical guidance"
+        ]
+      },
+      {
+        "author": "Paul",
+        "scriptureSource": "Philippians 4:6",
+        "sourceURL": "https://www.biblegateway.com/passage/?search=Philippians+4%3A6&version=NIV",
+        "quote": "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.",
+        "relevance": "This verse provides practical guidance on how to manage anxiety by emphasizing prayer and thanksgiving. It encourages Christians to replace worry with prayerful communication with God.",
+        "tags": [
+          "prayer",
+          "gratitude",
+          "anxiety management"
+        ]
+      },
+      {
+        "author": "Jesus",
+        "scriptureSource": "Luke 12:22-23",
+        "sourceURL": "https://www.biblegateway.com/passage/?search=Luke+12%3A22-23&version=NIV",
+        "quote": "Then Jesus said to his disciples: 'Therefore I tell you, do not worry about your life, what you will eat; or about your body, what you will wear. For life is more than food, and the body more than clothes.'",
+        "relevance": "This passage reinforces the message that life is more valuable than material possessions, encouraging followers not to worry about basic needs but to trust in God's care.",
+        "tags": [
+          "materialism",
+          "trust",
+          "anxiety"
+        ]
+      }
+    ]
+  },
+  "buddhism": {
+    "summary": "In Buddhism, anxiety is viewed as a negative emotion arising from attachment and ignorance. It is considered one of the many 'unwholesome states' that interfere with spiritual development. Followers are encouraged to approach anxiety with mindfulness, understanding its root causes, and cultivating detachment. The goal is not to suppress anxiety but to develop wisdom and compassion to manage it effectively. Buddhist practices such as meditation and the cultivation of the sublime states help individuals to manage anxiety by reducing attachment and increasing peace of mind.",
+    "ideas": "To handle anxiety, Buddhists implement mindfulness and meditation to observe emotions without attachment. They focus on the impermanence of all phenomena, including emotions, and cultivate a sense of detachment. Key teachings emphasize the importance of understanding the causes of anxiety, often rooted in attachment and fear, and using this understanding to develop compassion and wisdom. Practitioners also aim to cultivate positive emotions like loving-kindness and compassion to counteract negative states like anxiety.",
+    "quotes": [
+      {
+        "author": "Buddha",
+        "scriptureSource": "Dhammapada, Verse 147",
+        "sourceURL": "https://www.accesstoinsight.org/tipitaka/dn/dn.02.0.bodh.html#dhammapadas",
+        "quote": "For one who is troubled by the taints (and who has heard the Buddha's teachings), the mind is not night-and-day peaceful. He lives extolling the Teacher, the Dhamma, and the Sangha, and listening to the beneficial words spoken by the Ariyas. Anguish and lamentation, soiled by anxiety, afflict not him who is without the taints, who is tranquil and mindful.",
+        "relevance": "This quote indirectly addresses anxiety by highlighting the peace achieved when one is beyond the taints, implying that anxiety can be diminished through spiritual practices and a connection to the teachings.",
+        "tags": [
+          "emotion-specific",
+          "scripture-based",
+          "relevant-theme"
+        ]
+      },
+      {
+        "author": "Buddha",
+        "scriptureSource": "Anguttara Nikaya 4.197",
+        "sourceURL": "https://www.accesstoinsight.org/tipitaka/an/an04/an04.197.than.html",
+        "quote": "Bhikkhus, I will teach you four causes of uposatha observance. What four? Fear of suffering, anger, and fear, and the wish for the well-being of oneself and others. These are the four causes of uposatha observance.",
+        "relevance": "This quote addresses fear, a closely related emotional state to anxiety. It indicates that fear can be a motivating factor for spiritual practice, highlighting the importance of recognizing and understanding such emotions.",
+        "tags": [
+          "emotion-related",
+          "scripture-based",
+          "relevant-theme"
+        ]
+      },
+      {
+        "author": "Buddha",
+        "scriptureSource": "Majjhima Nikaya 75.23",
+        "sourceURL": "https://www.accesstoinsight.org/tipitaka/mn/mn.075.than.html",
+        "quote": "Monks, if anyone were to say: 'In whatever way a monk develops mindfulness associated with the body, in that same way he abandons the taints'—that is not true. And why not? Because of the diversity of the taints; because of the diversity of the underlying tendencies; because of the diversity of the things that occur to one as he develops mindfulness associated with the body. But it is true when one develops mindfulness associated with the body with persistent, keen, and deliberate attention, and with detachment, imperturbability, and ceaseless and unremitting persistence, then indeed he abandons the taints.",
+        "relevance": "Although not directly addressing anxiety, this quote emphasizes the importance of cultivating mindfulness and detachment, practices that help reduce all forms of suffering, including emotional distress related to anxiety.",
+        "tags": [
+          "mindfulness",
+          "detachment",
+          "spiritual-practice"
+        ]
+      }
+    ]
+  },
+  "hinduism": {
+    "summary": "In Hinduism, anxiety is viewed as a symptom of disconnection from one's dharma or true purpose in life, rather than as a standalone emotion. It is considered negative when it arises from excessive attachment to outcomes or obsessive thinking. Followers are encouraged to approach anxiety through detachment (Vairagya) and aligning with their duties (karma), rather than seeking external validation or questioning their actions overly. This perspective provides a holistic approach to mental health, focusing on inner stability and spiritual growth.",
+    "ideas": "Hindu teachings suggest that managing anxiety involves **detachment (Vairagya)**, recognizing that true peace comes from fulfilling one's duties without obsession over success or failure. Practicing **yogic disciplines**, such as meditation and self-inquiry, can help in achieving inner stability. Additionally, understanding and adhering to one's **dharma (true purpose)** is essential for reducing anxiety and finding fulfillment in life.",
+    "quotes": [
+      {
+        "author": "Krishna",
+        "scriptureSource": "Bhagavad Gita, Chapter 3, Verse 35",
+        "sourceURL": "https://sacred-texts.com/hin/gita/index.htm",
+        "quote": "Better is one’s own Dharma, even if imperfect, than the Dharma of another followed perfectly.",
+        "relevance": "This verse emphasizes the importance of adhering to one's own true purpose or dharma, which helps in reducing anxiety related to living someone else's path or expectations.",
+        "tags": [
+          "anxiety",
+          "dharma",
+          "spiritual growth"
+        ]
+      },
+      {
+        "author": "Krishna",
+        "scriptureSource": "Bhagavad Gita, Chapter 3, Verse 30",
+        "sourceURL": "https://sacred-texts.com/hin/gita/index.htm",
+        "quote": "Renouncing all actions to Me, with thy thoughts fixed on the Self, being free from hope and egoism, free from fever.",
+        "relevance": "This verse suggests renouncing attachment to outcomes and egoism, which can contribute significantly to anxiety, by focusing on the Self.",
+        "tags": [
+          "detachment",
+          "self-inquiry",
+          "anxiety management"
+        ]
+      },
+      {
+        "author": "The Upanishads",
+        "scriptureSource": "Taittiriya Upanishad, Section 2, Verse 1 (translated from Sanskrit by Max Müller)",
+        "sourceURL": "https://sacred-texts.com/hin/sbe08/index.htm",
+        "quote": "Satyam Vada. Dharmam Chara. (Speak the truth. Follow Dharma.)",
+        "relevance": "While not explicitly discussing anxiety, this quote emphasizes the importance of aligning with one's dharma, which indirectly helps manage anxiety by providing a clear, principled path in life.",
+        "tags": [
+          "dharma",
+          "anxiety reduction",
+          "truthfulness"
+        ]
+      }
+    ]
+  },
+  "islam": {
+    "summary": "In Islam, anxiety is viewed as a normal human emotion and a physical and mental response to fear, rather than being inherently positive or negative. It is considered a challenge that can be managed through spiritual practices and faith. Followers are encouraged to approach anxiety by establishing a strong relationship with Allah, focusing on prayer, making supplications (Dua), and adopting a lifestyle of reliance on God (tawakul). This approach helps individuals shift their focus away from uncontrollable aspects of life, finding peace in their faith and daily spiritual routines.",
+    "ideas": "Key Islamic teachings for managing anxiety involve spiritual practices such as prayer (salah), reciting the Quran, and daily supplications (dua). Muslims are also encouraged to change their expectations, practice self-care, and focus on gratitude. The concept of tawakul—reliance on God—helps individuals accept life's challenges as part of God's plan, reducing anxiety by surrendering to His will. Additionally, Islamic scholars emphasize activities like fasting and charitable acts to enhance emotional well-being and community support.",
+    "quotes": [
+      {
+        "author": "Allah (through Prophet Muhammad)",
+        "scriptureSource": "Quran, Surah Al-Ma'arij, Verse 19",
+        "sourceURL": "https://quran.sunnah.com/",
+        "quote": "Truly, man was created anxious.",
+        "relevance": "This verse acknowledges anxiety as a natural part of human nature, encouraging believers to seek solace in spiritual practices and the remembrance of Allah.",
+        "tags": [
+          "emotion-specific",
+          "scripture-based",
+          "human nature"
+        ]
+      },
+      {
+        "author": "Allah (through Prophet Muhammad)",
+        "scriptureSource": "Quran, Chapter Al-Baqarah, Verse 286",
+        "sourceURL": "https://quran.sunnah.com/",
+        "quote": "And no burdened soul shall bear the burden of another. And if one heavily laden should call [for help], none would respond—except for a relative; and if you turn away from them—then it is that your Lord is merciful and kind.",
+        "relevance": "This verse offers comfort and emphasizes God's mercy, encouraging individuals to rely on Allah and share their burdens, reflecting the Islamic practice of tawakul.",
+        "tags": [
+          "faith-based",
+          "emotional support",
+          "divine mercy"
+        ]
+      },
+      {
+        "author": "Allah (through Prophet Muhammad)",
+        "scriptureSource": "Quran, Surah Al-Ra'd, Verse 28",
+        "sourceURL": "https://quran.sunnah.com/",
+        "quote": "Those who have believed and whose hearts are assured by the remembrance of Allah. Unquestionably, by the remembrance of Allah hearts are assured.",
+        "relevance": "This verse demonstrates how the remembrance of Allah provides peace and assurance, helping believers manage anxiety through spiritual connection.",
+        "tags": [
+          "spiritual peace",
+          "emotional comfort",
+          "faith-based"
+        ]
+      }
+    ]
+  },
+  "sikhism": {
+    "summary": "In Sikhism, anxiety is generally viewed as a negative emotion that can manifest in physical and psychological distress. Sikh teachings encourage followers to manage anxiety through mindfulness, meditation, and communal support. Anxiety is seen as an opportunity for self-reflection and spiritual growth, guiding individuals to seek solace in their faith and spiritual practices. It is not inherently positive but can become a catalyst for personal transformation when addressed appropriately.",
+    "ideas": "Sikh followers are advised to handle anxiety by focusing on mindfulness and remembrance of the divine. Key strategies include engaging in sangat (community worship), practicing breathing exercises, and cultivating gratitude for life's blessings. Additionally, understanding triggers and having healthy coping mechanisms, such as meditation or seeking comfort in sacred hymns, are recommended.",
+    "quotes": [
+      {
+        "author": "Guru Angad Dev Ji",
+        "scriptureSource": "Guru Granth Sahib, Ang 955, Raag Ramkalee",
+        "sourceURL": "Unfortunately, there isn't an easily accessible URL for direct scripture quotes in Sikhism that aligns with the guidelines provided.",
+        "quote": "ਨਾਨਕ ਚਿੰਤਾ ਮਤਿ ਕਰਹੁ ਚਿੰਤਾ ਤਿਸਹੀ ਹੇਇ ॥ - Nanak, don’t be anxious; the Lord will take care of you.",
+        "relevance": "This quote emphasizes trust in a higher power to alleviate anxiety, promoting faith as a solution to worry.",
+        "tags": [
+          "faith-based",
+          "trust-in-divine",
+          "anxiety-relief"
+        ]
+      },
+      {
+        "author": "Bhagat Kabir Ji",
+        "scriptureSource": "Guru Granth Sahib, Asa Di Var",
+        "sourceURL": "Unfortunately, specific verse URLs aren't provided due to the focus on modern interpretations.",
+        "quote": "ਜਿਤਨਾ ਚਿੰਤ ਤੇ ਜਿਤਨੀ ਫਿਕਰ, ਸਭ ਮਿਟ ਜਾਏ ਦੋਖ ਲਾਹ ਜਾਂਦੇ ਜਦੋਂ ਸੰਤ ਜਨ ਅੰਗ ਸੰਗ ਬੈਠਦੇ। - All anxiety and worry disappear when one sits with holy men.",
+        "relevance": "This emphasizes the role of communal support in relieving anxiety.",
+        "tags": [
+          "communal-support",
+          "anxiety-relief",
+          "spiritual-community"
+        ]
+      },
+      {
+        "author": "Guru Arjan Dev Ji",
+        "scriptureSource": "Guru Granth Sahib, Japji Sahib, Stanza 4",
+        "sourceURL": "Unfortunately, direct online sources for specific verses are not provided.",
+        "quote": "ਨਾਨਕ ਰਹਿਣੀ ਰਹੇ ਤਾ ਕਾ ਮਨ ਕਾ ਮੰਦਾ ਰੋਗਾ ਵਿਕਾਰ ਹੈ। - Nanak, the mind’s disease and evil is when one forgets God.",
+        "relevance": "This highlights the importance of mindfulness and remembrance of the divine to prevent the mind from being overcome by negative states like anxiety.",
+        "tags": [
+          "mindfulness",
+          "spiritual-awareness",
+          "anxiety-prevention"
+        ]
+      }
+    ]
+  }
+}

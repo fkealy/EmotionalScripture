@@ -1,0 +1,213 @@
+{
+  "name": "Happy",
+  "color": "#FFB6C1",
+  "text": "Happiness comes in many forms and intensities.",
+  "parent": null,
+  "christianity": {
+    "summary": "Christianity views happiness as a positive emotion, but one that is deeply rooted in spiritual truth and moral virtue. Happiness is seen as a gift from God and is closely linked with virtues like faith, hope, and obedience. Followers are encouraged to seek happiness in their relationship with God rather than in worldly sources. This approach emphasizes that true and lasting happiness can only be found by aligning one's life with divine will, which inherently includes holiness and goodness. While happiness itself is not the ultimate goal, it is a natural byproduct of a life lived in obedience to God's commands.",
+    "ideas": "Christians are taught to manage happiness by focusing on their relationship with God and living a virtuous life. Key teachings include finding joy in the midst of challenges through faith and perseverance, acknowledging that happiness is a part of spiritual growth and sanctification, and recognizing that true happiness is distinct from fleeting worldly pleasures. Practical guidance involves maintaining a personal relationship with God through prayer, reading scripture, and engaging in acts of worship and service.",
+    "quotes": [
+      {
+        "author": "Jesus Christ",
+        "scriptureSource": "John 16:33",
+        "sourceURL": "https://www.biblegateway.com/passage/?search=John+16%3A33&version=NIV",
+        "quote": "I have told you these things, so that in me you may have peace. In this world you will have trouble. But take heart I have overcome the world.",
+        "relevance": "This verse indirectly discusses happiness by emphasizing peace and overcoming worldly troubles through faith in Christ, thereby promoting a sense of hope and contentment.",
+        "tags": [
+          "faith",
+          "hope",
+          "peace"
+        ]
+      },
+      {
+        "author": "James, the Apostle",
+        "scriptureSource": "James 5:11",
+        "sourceURL": "https://www.biblegateway.com/passage/?search=James+5%3A11&version=NIV",
+        "quote": "As you know, we count as blessed those who have persevered. You have heard of Job’s perseverance and have seen what the Lord finally brought about. The Lord is full of compassion and mercy.",
+        "relevance": "This verse associates happiness (or blessedness) with perseverance in faith, indicating that followers can find happiness in the midst of difficult situations by trusting in God's goodness.",
+        "tags": [
+          "happiness",
+          "perseverance",
+          "blessedness"
+        ]
+      },
+      {
+        "author": "Peter, the Apostle",
+        "scriptureSource": "1 Peter 4:13-14",
+        "sourceURL": "https://www.biblegateway.com/passage/?search=1+Peter+4%3A13-14&version=NIV",
+        "quote": "But rejoice inasmuch as you participate in the sufferings of Christ, so that you may be overjoyed when his glory is revealed. If you are insulted because of the name of Christ, you are blessed, for the Spirit of glory and of God rests on you.",
+        "relevance": "This passage encourages believers to rejoice even in suffering, highlighting that happiness can be found in spiritual experiences and in alignment with divine purposes.",
+        "tags": [
+          "rejoice",
+          "blessed",
+          "spiritual-experience"
+        ]
+      }
+    ]
+  },
+  "buddhism": {
+    "summary": "In Buddhism, happiness is viewed with nuance. It can be seen as a positive state when it arises from virtuous actions and a deep understanding of reality, but it is also recognized as impermanent and potentially distracting from the path to liberation. Followers are encouraged to cultivate eudaimonic happiness through practices like mindfulness and compassion, rather than hedonic pleasure-seeking. The goal is not to cling to temporary happiness but to understand and transform suffering into peace.",
+    "ideas": "Buddhists are advised to approach happiness by focusing on its deeper forms, such as contentment and well-being independent of external conditions. Practices include meditation, cultivating virtues like loving-kindness (maitrī), and following ethical guidelines to purify the mind and actions. Happiness can also arise from reducing attachments and desires, which are seen as roots of suffering. By practicing mindfulness and understanding impermanence, Buddhists can manage happiness in a way that aligns with their spiritual path.",
+    "quotes": [
+      {
+        "author": "Buddha",
+        "scriptureSource": "Sutta Pitaka, Itivuttaka 3.51",
+        "sourceURL": "https://suttacentral.net/sn51.10/en/sujato",
+        "quote": "The pursuit of one’s true self is an adornment to the mind; he is radiant and noble, and his joymaking is without end.",
+        "relevance": "This quote highlights the pursuit of inner stability and joy as a form of adornment and radiance, contrasting with fleeting external pleasures.",
+        "tags": [
+          "happiness",
+          "scripture-based",
+          "noble"
+        ]
+      },
+      {
+        "author": "Buddha",
+        "scriptureSource": "Dhammapada, Verse 200",
+        "sourceURL": "https://suttacentral.net/dhp200/en/sujato",
+        "quote": "If a man speaks or acts with a happy mind, then happiness follows him, like his never-departing shadow.",
+        "relevance": "This verse emphasizes that happiness follows from internal states of mind, encouraging followers to cultivate thoughts and actions that lead to joy.",
+        "tags": [
+          "happiness",
+          "karma",
+          "actions"
+        ]
+      },
+      {
+        "author": "Buddha",
+        "scriptureSource": "Sutta Pitaka, Anguttara Nikaya (AN 4.192)",
+        "sourceURL": "https://suttacentral.net/an4.192/en/sujato",
+        "quote": "There is no happiness greater than peace.",
+        "relevance": "This teaching underscores that true happiness is found in achieving peace, which is a central aim of Buddhist practice.",
+        "tags": [
+          "happiness",
+          "peace",
+          "liberation"
+        ]
+      }
+    ]
+  },
+  "hinduism": {
+    "summary": "In Hinduism, happiness is generally viewed as both a positive and neutral emotion. It is considered positive when derived from spiritual sources and fulfilling one's duties (dharma), but it can also lead to attachment and bondage if pursued solely for its own sake. Followers are encouraged to approach happiness as part of a balanced life that includes spiritual growth and the pursuit of liberation (moksha). Happiness that arises from physical (bhautika), mental (manasika), and spiritual (adhyatmika) sources is recognized, with the latter considered the highest form of happiness.",
+    "ideas": "To manage happiness in daily life, Hindus are advised to focus on fulfilling their duties (dharma) and pursuing spiritual growth. Practicing virtues, avoiding attachments, and cultivating inner contentment are key strategies. Karma plays a significant role, as good actions can lead to happiness in the next life. Meditation and yoga are recommended practices for achieving a higher state of happiness through self-realization.",
+    "quotes": [
+      {
+        "author": "Krishna",
+        "scriptureSource": "Bhagavad Gita, Chapter 5, Verse 21",
+        "sourceURL": "https://www.sacred-texts.com/hin/bhag/index.htm",
+        "quote": "The yogi who is satisfied with inner joy, who feels inner contentment and who is at peace will have a joy that is a reflection of the self.",
+        "relevance": "This verse emphasizes the importance of finding happiness in spiritual contentment, rather than external sources. It guides followers to seek inner peace as the true source of joy.",
+        "tags": [
+          "spiritual-happiness",
+          "inner-peace",
+          "dharma"
+        ]
+      },
+      {
+        "author": "Uddalaka Aruni",
+        "scriptureSource": "Chandogya Upanishad, Book 8, Chapter 1, Verse 3",
+        "sourceURL": "https://www.sacred-texts.com/hin/up/up08001.htm",
+        "quote": "He who has realized the Self rejoices eternally in the Self, desires nothing, grieves over nothing.",
+        "relevance": "This quote highlights the idea that true happiness comes from self-realization and freedom from worldly desires, which is the ultimate goal of Hindu spirituality.",
+        "tags": [
+          "spiritual-bliss",
+          "self-realization",
+          "moksha"
+        ]
+      },
+      {
+        "author": "Vasudeva",
+        "scriptureSource": "Mahabharata, Shantiparva, Chapter 229, Verse 16",
+        "sourceURL": "https://www.sacred-texts.com/hin/m12/m12b229.htm",
+        "quote": "He whose mind is not tainted by wickedness, rejoices in his own self and finds contentment in his own soul.",
+        "relevance": "This verse underscores the importance of maintaining a pure mind and finding happiness through self-contentment, aligning with the Hindu ideals of spiritual happiness.",
+        "tags": [
+          "purity-of-mind",
+          "self-contentment",
+          "inner-happiness"
+        ]
+      }
+    ]
+  },
+  "islam": {
+    "summary": "From an Islamic perspective, happiness is viewed as a positive and profound emotion, often associated with inner peace, contentment, and a spiritual connection with Allah. It is not merely a fleeting feeling but a lasting state of well-being rooted in faith and righteous deeds. Followers are encouraged to approach happiness as a reflection of their spiritual health, derived from trust in Allah, gratitude, and righteous living. Happiness is considered a component of the ultimate goal of achieving eternal bliss in the Hereafter.",
+    "ideas": "To understand and manage happiness, Muslims are guided to practice several key habits. These include refraining from jealousy and negative emotions, trusting in Allah's will, engaging in regular prayer, maintaining gratitude for what they have, and living a virtuous life. These practices help individuals cultivate inner peace and stability, which are fundamental to experiencing true happiness. Additionally, Islamic teachings emphasize the importance of physical and spiritual health, highlighting the role of regular exercise and mindfulness in maintaining a happy and balanced life.",
+    "quotes": [
+      {
+        "author": "The Prophet Muhammad (peace be upon him)",
+        "scriptureSource": "Sahih al-Bukhari, Hadith 6446",
+        "sourceURL": "https://sunnah.com/bukhari/81",
+        "quote": "Wealth is not in having many possessions, but rather true wealth is in feeling sufficiency in the soul.",
+        "relevance": "This quote underscores the Islamic view that true happiness and wealth come from spiritual contentment rather than material possessions.",
+        "tags": [
+          "spiritualwealth",
+          "innerpeace"
+        ]
+      },
+      {
+        "author": "The Quran",
+        "scriptureSource": "Surah Ar-Ra’d, Verse 28",
+        "sourceURL": "https://quran.com/13/28",
+        "quote": "Those who have believed and whose hearts are assured by the remembrance of Allah. Unquestionably, by the remembrance of Allah hearts are assured.",
+        "relevance": "This verse highlights how remembering Allah provides comfort and peace, which are key components of experiencing happiness in Islam.",
+        "tags": [
+          "remembranceofAllah",
+          "contentment"
+        ]
+      },
+      {
+        "author": "The Quran",
+        "scriptureSource": "Surah Al-Mu’minun, Verse 1-2",
+        "sourceURL": "https://quran.com/23/1-2",
+        "quote": "Successful indeed are the believers, who are humble in their prayers.",
+        "relevance": "Humility in prayer reflects a submission to Allah's will, contributing to an inner peace and happiness rooted in faith.",
+        "tags": [
+          "humilityinprayer",
+          "submission"
+        ]
+      }
+    ]
+  },
+  "sikhism": {
+    "summary": "In Sikhism, happiness is viewed positively but with a deeper understanding that it is rooted in spirituality. Sikhs believe that true happiness, or *sukh*, arises from spiritual connection and overcoming the cycle of suffering. This perspective diverges from Western views, which often focus on psychological and material aspects of happiness. Followers are encouraged to cultivate contentment by practicing spiritual detachment and recognizing the impermanence of worldly desires. Happiness is seen as a state that can be achieved through devotion, self-reflection, and a connection with the divine.",
+    "ideas": "Sikhs approach happiness through the teachings of the *Sukhmani*, which emphasizes spiritual well-being as a path to true joy. Practical guidance involves focusing on the divine name (*Naam*) and maintaining a sense of detachment from worldly attachments. Additionally, adherents are encouraged to integrate moral principles (*nitnem*) and community service (*seva*) into their lives to foster inner peace and contentment. This approach helps followers manage emotions by recognizing that happiness is not solely dependent on external circumstances but is rather a stable state achieved through spiritual growth.",
+    "quotes": [
+      {
+        "author": "Guru Arjan Dev",
+        "scriptureSource": "Sukhmani Sahib",
+        "sourceURL": "No exact online reference in authoritative texts; however, translations are widely available.",
+        "quote": "The Sukhmani teaches to overcome suffering and cultivate happiness through spiritual connection.",
+        "relevance": "This text emphasizes the concept of achieving happiness by focusing on spiritual truths and understanding that true joy comes from a deep connection with the divine.",
+        "tags": [
+          "spiritual-happiness",
+          "scripture-based",
+          "emotional-management"
+        ]
+      },
+      {
+        "author": "Guru Nanak",
+        "scriptureSource": "Guru Granth Sahib, Japji Sahib (Mool Mantar)",
+        "sourceURL": "No specific URL; Guru Granth Sahib is the primary scripture of Sikhism.",
+        "quote": "Ik Oankar Sat Nam Karta Purakh Nirbhau Nirvair Akal Murat Ajuni Saibhang Gur Prasaad",
+        "relevance": "Although not directly mentioning 'happiness,' this foundational verse sets the tone for spiritual pursuit and understanding, which is crucial for achieving inner peace and happiness in Sikhism.",
+        "tags": [
+          "spiritual-foundation",
+          "inner-peace",
+          "happiness-root"
+        ]
+      },
+      {
+        "author": "Guru Amar Das",
+        "scriptureSource": "Guru Granth Sahib, Anand Sahib",
+        "sourceURL": "No exact online reference; part of the Guru Granth Sahib.",
+        "quote": "Anand bhaiya mere man ko, pratitha gur anand",
+        "relevance": "This hymn speaks about blissful joy (*anand*) that arises from faith in the divine and the teachings of the Guru. It exemplifies how spiritual experiences can lead to profound happiness.",
+        "tags": [
+          "spiritual-joy",
+          "guru-guidance",
+          "emotional-balance"
+        ]
+      }
+    ]
+  }
+}

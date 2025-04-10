@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: emotion_generator
+Version: 0.1
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: python-dotenv>=1.0.0
+Requires-Dist: requests>=2.31.0
+Requires-Dist: loguru>=0.7.0
+Dynamic: requires-dist

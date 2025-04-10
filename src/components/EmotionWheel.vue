@@ -1,27 +1,13 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { gsap } from 'gsap'
-import { innerEmotions, middleEmotions, outerEmotions } from '../emotionData'
+import { innerEmotions, middleEmotions, outerEmotions } from '../data/wheelStructure'
+import { loadEmotionData } from '../data/emotionLoader'
+import { useSettingsStore } from '../stores/settings'
+import type { Emotion, Quote, ReligionData } from '../types/emotions'
+import { Religion } from '../types/emotions'
 
-// Define the Emotion interface
-interface Emotion {
-  name: string
-  color: string
-  text: string
-  parent?: string
-  children?: string[]
-  Christianity?: {
-    scriptureSource: string
-    summary: string
-    ideas: string
-    similarTo: string[]
-    quotes: {
-      quote: string
-      author: string
-      sourceURL: string
-    }[]
-  }[]
-}
+const { selectedReligions } = useSettingsStore()
 
 // Wheel configuration
 const WHEEL_CONFIG = {
@@ -31,7 +17,7 @@ const WHEEL_CONFIG = {
   maxRadius: 290,
   strokeWidth: 0.5,
   longWordThreshold: 10,
-  bubblePadding: 15 // Slightly smaller padding just for the viewBox
+  bubblePadding: 15
 } as const
 
 // Animation configuration
@@ -108,12 +94,12 @@ const isMobileDevice = ref(false)
 const currentRotation = ref(0)
 const isExpanded = ref(false)
 const expandedEmotion = ref<Emotion | null>(null)
+const selectedScripture = ref<any>(null)
 
-const wheelRef = ref<SVGSVGElement | null>(null)
+const wheelRef = ref<SVGElement | null>(null)
 const outerGroupRef = ref<SVGGElement | null>(null)
 const middleGroupRef = ref<SVGGElement | null>(null)
 const innerGroupRef = ref<SVGGElement | null>(null)
-const overlayRef = ref(null)
 
 const touchStartX = ref(0)
 const touchStartY = ref(0)
@@ -133,6 +119,18 @@ const activeSpinTimeline = ref<gsap.core.Timeline | null>(null)
 
 // Add a ref to track momentum timeline
 const momentumTimeline = ref<gsap.core.Timeline | null>(null)
+
+const selectedEmotion = ref<Emotion | null>(null)
+const isMobile = ref(window.innerWidth < 768)
+
+const props = defineProps<{
+  emotions: Emotion[]
+}>()
+
+const emit = defineEmits<{
+  'select-emotion': [emotion: Emotion]
+  'close': []
+}>()
 
 function polarToCartesian(centerX: number, centerY: number, radius: number, angleInDegrees: number) {
   const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0
@@ -193,104 +191,50 @@ function rotateWheel(angle: number) {
     activeSpinTimeline.value = null
   }
   
+  // We only need to rotate the main wheel group
+  if (!outerGroupRef.value) return
+  
   const currentRotation = gsap.getProperty(outerGroupRef.value, "rotation") as number || 0
+  const newRotation = currentRotation + angle
   
-  gsap.to([outerGroupRef.value, middleGroupRef.value, innerGroupRef.value], {
-    rotation: currentRotation + angle,
-    duration: 0.1,
+  // Apply rotation to the main wheel group only and ensure no translation occurs
+  gsap.to(outerGroupRef.value, {
+    rotation: newRotation,
+    duration: 0.2,
     ease: "none",
-    transformOrigin: "50% 50%",
-    overwrite: "auto"
-  })
+    transformOrigin: "center center",
+    x: 0,
+    y: 0,
+    overwrite: true
+  });
 }
 
-function expandSegment(emotion: Emotion, angle: number) {
-  if (isExpanded.value) return
+const expandSegment = (emotion: Emotion) => {
+  selectedEmotion.value = emotion
+  emit('select-emotion', emotion)
   
-  // Reset any other segments that might be in a bubbled state
-  const segments = document.querySelectorAll('.segment-path')
-  segments.forEach(segment => {
-    if (segment !== event?.target) {  // Don't reset the clicked segment
-      const normalPath = segment.getAttribute('data-normal-path')
-      if (normalPath) {
-        gsap.set(segment, {
-          d: normalPath,
-          scale: 1,
-          opacity: 1,
-          svgOrigin: "0 0"
-        })
-      }
-    }
-  })
-
-  isExpanded.value = true
-  expandedEmotion.value = emotion
-
-  // Determine if we're on a mobile device
-  const isMobile = window.innerWidth <= 768
-
-  // Show the overlay and content
-  gsap.to('.close-button', {
-    opacity: 1,
-    duration: 0.3,
-    display: 'flex'
-  })
-
-  gsap.to(overlayRef.value, {
-    width: '300vmax',
-    height: '300vmax',
-    opacity: 0.9,
-    duration: isMobile ? ANIMATION_CONFIG.overlay.duration.mobile : ANIMATION_CONFIG.overlay.duration.desktop,
-    ease: ANIMATION_CONFIG.overlay.ease,
-    onComplete: () => {
-      gsap.to(['.emotion-details', '.scripture-container'], {
-        opacity: 1,
-        duration: isMobile ? 0.7 : 0.5,
-        delay: 0.2
-      })
-    }
-  })
+  // Animate the wheel
+  if (wheelRef.value) {
+    gsap.to(wheelRef.value, {
+      opacity: 0.3,
+      scale: 0.95,
+      duration: 0.3,
+      ease: 'power2.out'
+    })
+  }
 }
 
-function contractSegment() {
-  if (!isExpanded.value) return
-  
-  // Reset all segments to their normal state first
-  const segments = document.querySelectorAll('.segment-path')
-  segments.forEach(segment => {
-    const normalPath = segment.getAttribute('data-normal-path')
-    if (normalPath) {
-      gsap.to(segment, {
-        d: normalPath,
-        scale: 1,
-        opacity: 1,
-        duration: 0.3,
-        ease: "power2.inOut",
-        svgOrigin: "0 0"
-      })
-    }
-  })
-
-  // Fade out the text and scripture data
-  gsap.to(['.emotion-details', '.scripture-container', '.close-button'], {
-    opacity: 0,
-    duration: 0.3,
-    onComplete: () => {
-      gsap.set('.close-button', { display: 'none' })
-      // Then animate the overlay contraction
-      gsap.to(overlayRef.value, {
-        width: 0,
-        height: 0,
-        opacity: 0,
-        duration: 0.7,
-        ease: "power2.inOut",
-        onComplete: () => {
-          isExpanded.value = false
-          expandedEmotion.value = null
-        }
-      })
-    }
-  })
+const collapseSegment = () => {
+  if (wheelRef.value) {
+    gsap.to(wheelRef.value, {
+      opacity: 1,
+      scale: 1,
+      duration: 0.3,
+      ease: 'power2.out'
+    })
+  }
+  selectedEmotion.value = null
+  emit('close')
 }
 
 function createSegments(emotions: any[], innerRadius: number, outerRadius: number, group: SVGGElement) {
@@ -325,6 +269,10 @@ function createSegments(emotions: any[], innerRadius: number, outerRadius: numbe
     const startAngle = startOffset + (index * angleStep)
     const endAngle = startOffset + ((index + 1) * angleStep)
     
+    // Create a segment group to contain both path and text
+    const segmentGroup = document.createElementNS("http://www.w3.org/2000/svg", "g")
+    segmentGroup.setAttribute("class", "segment-group")
+    
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path")
     const normalPath = createSegmentPath(0, 0, outerRadius, startAngle, endAngle)
     const bubbledPath = createBubbledSegmentPath(0, 0, outerRadius, startAngle, endAngle)
@@ -343,7 +291,7 @@ function createSegments(emotions: any[], innerRadius: number, outerRadius: numbe
     path.setAttribute("stroke-width", WHEEL_CONFIG.strokeWidth.toString())
     path.setAttribute("class", "cursor-pointer segment-path")
     
-    // Add hover animation using GSAP
+    // Add hover animation
     path.addEventListener('mouseenter', () => {
       if (!isExpanded.value) {
         gsap.to(path, {
@@ -351,7 +299,7 @@ function createSegments(emotions: any[], innerRadius: number, outerRadius: numbe
           opacity: ANIMATION_CONFIG.segment.hover.opacity,
           duration: ANIMATION_CONFIG.segment.hover.duration,
           ease: "power2.out",
-          svgOrigin: "0 0"
+          transformOrigin: "center center"
         })
       }
     })
@@ -363,7 +311,7 @@ function createSegments(emotions: any[], innerRadius: number, outerRadius: numbe
           opacity: 1,
           duration: ANIMATION_CONFIG.segment.hover.duration,
           ease: "power2.inOut",
-          svgOrigin: "0 0"
+          transformOrigin: "center center"
         })
       }
     })
@@ -381,7 +329,7 @@ function createSegments(emotions: any[], innerRadius: number, outerRadius: numbe
                 d: normalPath,
                 scale: 1,
                 opacity: 1,
-                svgOrigin: "0 0"
+                transformOrigin: "center center"
               })
             }
           }
@@ -390,8 +338,7 @@ function createSegments(emotions: any[], innerRadius: number, outerRadius: numbe
         // Bubble animation
         const timeline = gsap.timeline({
           onComplete: () => {
-            const segmentAngle = startAngle + (angleStep / 2)
-            expandSegment(emotion, segmentAngle)
+            expandSegment(emotion)
           }
         })
 
@@ -399,12 +346,13 @@ function createSegments(emotions: any[], innerRadius: number, outerRadius: numbe
           d: bubbledPath,
           scale: ANIMATION_CONFIG.segment.click.bubbleScale,
           duration: ANIMATION_CONFIG.segment.click.bubbleDuration,
-          ease: ANIMATION_CONFIG.segment.click.bubbleEase
+          ease: ANIMATION_CONFIG.segment.click.bubbleEase,
+          transformOrigin: "center center"
         })
       }
     })
     
-    group.appendChild(path)
+    segmentGroup.appendChild(path)
     
     // Text sizing logic
     const textRadius = (innerRadius + outerRadius) / 2
@@ -422,15 +370,15 @@ function createSegments(emotions: any[], innerRadius: number, outerRadius: numbe
 
       const textPath = document.createElementNS("http://www.w3.org/2000/svg", "path")
       textPath.setAttribute("d", textPathD)
-      textPath.setAttribute("id", `textPath-${index}`)
+      textPath.setAttribute("id", `textPath-${index}-${innerRadius}`)
       textPath.setAttribute("fill", "none")
-      group.appendChild(textPath)
+      segmentGroup.appendChild(textPath)
 
       const text = document.createElementNS("http://www.w3.org/2000/svg", "text")
       text.setAttribute("class", "text-lg md:text-base font-bold fill-current text-gray-800")
       
       const textPathElement = document.createElementNS("http://www.w3.org/2000/svg", "textPath")
-      textPathElement.setAttribute("href", `#textPath-${index}`)
+      textPathElement.setAttribute("href", `#textPath-${index}-${innerRadius}`)
       textPathElement.setAttribute("startOffset", "50%")
       textPathElement.setAttribute("text-anchor", "middle")
       textPathElement.setAttribute("dominant-baseline", "middle")
@@ -463,7 +411,8 @@ function createSegments(emotions: any[], innerRadius: number, outerRadius: numbe
       textGroup.appendChild(text)
     }
     
-    group.appendChild(textGroup)
+    segmentGroup.appendChild(textGroup)
+    group.appendChild(segmentGroup)
   })
 }
 
@@ -488,27 +437,65 @@ function adjustColor(color: string, amount: number): string {
 }
 
 function initializeWheel() {
-  if (!wheelRef.value) return
+  console.log('Initializing wheel...')
+  if (!wheelRef.value) {
+    console.error('Wheel ref is null')
+    return
+  }
 
-  outerGroupRef.value = document.createElementNS("http://www.w3.org/2000/svg", "g")
-  middleGroupRef.value = document.createElementNS("http://www.w3.org/2000/svg", "g")
-  innerGroupRef.value = document.createElementNS("http://www.w3.org/2000/svg", "g")
-
-  createSegments(outerEmotions, 190, 290, outerGroupRef.value)
-  createSegments(middleEmotions, 100, 190, middleGroupRef.value)
-  createSegments(innerEmotions, 50, 100, innerGroupRef.value)
-
-  wheelRef.value.appendChild(outerGroupRef.value)
-  wheelRef.value.appendChild(middleGroupRef.value)
-  wheelRef.value.appendChild(innerGroupRef.value)
-
+  // Create a fixed center group that will never move
+  const fixedCenterGroup = document.createElementNS("http://www.w3.org/2000/svg", "g")
+  fixedCenterGroup.setAttribute("class", "fixed-center-group")
+  
+  // Create the center circle in the fixed group
   const centerCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle")
   centerCircle.setAttribute("cx", "0")
   centerCircle.setAttribute("cy", "0")
-  centerCircle.setAttribute("r", "50")
+  centerCircle.setAttribute("r", WHEEL_CONFIG.innerRadius.toString())
   centerCircle.setAttribute("fill", "white")
-  centerCircle.setAttribute("stroke", "#ccc")
-  wheelRef.value.appendChild(centerCircle)
+  centerCircle.setAttribute("stroke", "#eee")
+  centerCircle.setAttribute("stroke-width", "1")
+  fixedCenterGroup.appendChild(centerCircle)
+  
+  // Create a single main wheel group that all segments will be added to
+  const mainWheelGroup = document.createElementNS("http://www.w3.org/2000/svg", "g")
+  mainWheelGroup.setAttribute("class", "main-wheel-group")
+  
+  // Store the main wheel group in a ref for rotation
+  outerGroupRef.value = mainWheelGroup
+  
+  // Create groups for each ring
+  const outerRingGroup = document.createElementNS("http://www.w3.org/2000/svg", "g")
+  const middleRingGroup = document.createElementNS("http://www.w3.org/2000/svg", "g")
+  const innerRingGroup = document.createElementNS("http://www.w3.org/2000/svg", "g")
+  
+  outerRingGroup.setAttribute("class", "outer-ring-group")
+  middleRingGroup.setAttribute("class", "middle-ring-group")
+  innerRingGroup.setAttribute("class", "inner-ring-group")
+  
+  // Create segments for each ring
+  createSegments(outerEmotions, 190, 290, outerRingGroup)
+  createSegments(middleEmotions, 100, 190, middleRingGroup)
+  createSegments(innerEmotions, 50, 100, innerRingGroup)
+  
+  // Add all rings to the main wheel group
+  mainWheelGroup.appendChild(outerRingGroup)
+  mainWheelGroup.appendChild(middleRingGroup)
+  mainWheelGroup.appendChild(innerRingGroup)
+  
+  // First add the main wheel group, then the fixed center on top
+  wheelRef.value.appendChild(mainWheelGroup)
+  wheelRef.value.appendChild(fixedCenterGroup)
+  
+  // Set transform origin explicitly for the main wheel group
+  gsap.set(mainWheelGroup, {
+    transformOrigin: "center center",
+    rotation: 0,
+    x: 0,
+    y: 0
+  })
+
+  console.log('Wheel initialization complete')
 }
 
 // Utility functions
@@ -522,17 +509,17 @@ function debounce<T extends (...args: any[]) => void>(fn: T, delay: number): T {
 
 // Event handlers with performance optimizations
 function handleWheel(event: WheelEvent) {
-  event.preventDefault()
+  event.preventDefault();
   if (!isExpanded.value) {
-    const scrollAmount = event.deltaY
-    const rotationAmount = scrollAmount * 0.5
-    requestAnimationFrame(() => rotateWheel(rotationAmount))
+    const scrollAmount = event.deltaY;
+    const rotationAmount = scrollAmount * 2.5; // Dramatically increased for faster rotation
+    rotateWheel(rotationAmount);
   }
 }
 
 function handleKeyDown(event: KeyboardEvent) {
   if (event.key === 'Escape' && isExpanded.value) {
-    contractSegment()
+    collapseSegment()
   }
 }
 
@@ -553,22 +540,22 @@ function handleTouchMove(event: TouchEvent) {
   const touch = event.touches[0]
   const deltaX = touch.clientX - touchStartX.value
   const deltaY = touch.clientY - touchStartY.value
+  
+  // Exit early if movement is too small - reduce threshold for more sensitivity
   const moveDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+  if (moveDistance < 3) return // Reduced from 5 for more sensitivity
 
-  if (moveDistance < ANIMATION_CONFIG.touch.minMovement) {
-    return
-  }
-
+  event.preventDefault()
+  touchMoved.value = true
+  
+  // Kill any momentum timeline
   if (momentumTimeline.value) {
     momentumTimeline.value.kill()
     momentumTimeline.value = null
   }
-
-  touchMoved.value = true
-  event.preventDefault()
   
   const now = Date.now()
-  if (now - lastTouchMoveTime.value < 16) return
+  if (now - lastTouchMoveTime.value < 16) return  // Limit to ~60fps
   
   const wheelRect = wheelRef.value?.getBoundingClientRect()
   if (!wheelRect) return
@@ -580,6 +567,7 @@ function handleTouchMove(event: TouchEvent) {
     touchStartY.value - wheelCenterY,
     touchStartX.value - wheelCenterX
   )
+  
   const currentAngle = Math.atan2(
     touch.clientY - wheelCenterY,
     touch.clientX - wheelCenterX
@@ -589,37 +577,21 @@ function handleTouchMove(event: TouchEvent) {
   if (angleDiff > 180) angleDiff -= 360
   if (angleDiff < -180) angleDiff += 360
   
-  const distanceFromCenter = Math.sqrt(
-    Math.pow(touch.clientX - wheelCenterX, 2) + 
-    Math.pow(touch.clientY - wheelCenterY, 2)
-  )
-  const maxDistance = Math.min(wheelRect.width, wheelRect.height) / 2
+  // Extreme sensitivity for mobile
+  const isMobile = window.innerWidth <= 768
+  const rotationAmount = angleDiff * (isMobile ? 8.0 : 3.5) // Massively increased for mobile
   
-  const baseSensitivity = ANIMATION_CONFIG.touch.sensitivity
-  const distanceFactor = Math.min(distanceFromCenter / maxDistance, 1)
-  const sensitivity = Math.min(
-    baseSensitivity + (distanceFactor * baseSensitivity),
-    ANIMATION_CONFIG.touch.maxSensitivity
-  )
-  
-  const rotationAmount = angleDiff * sensitivity
-  
+  // Track velocity for momentum
   const timeDelta = Math.max(now - lastTouchMoveTime.value, 1)
-  const instantVelocity = (rotationAmount / timeDelta) * 100
-  
-  const smoothingFactor = ANIMATION_CONFIG.touch.velocitySmoothing
-  lastTouchMoveAngle.value = instantVelocity * (1 - smoothingFactor) + 
-                            (lastTouchMoveAngle.value || 0) * smoothingFactor
+  const velocity = rotationAmount / timeDelta * 100
+  lastTouchMoveAngle.value = velocity
   
   lastTouchMoveTime.value = now
   touchStartX.value = touch.clientX
   touchStartY.value = touch.clientY
   
-  // Get the current rotation
-  const currentRotation = gsap.getProperty(outerGroupRef.value, "rotation") as number || 0
-  
-  // Update the rotation using the rotateWheel function
-  requestAnimationFrame(() => rotateWheel(rotationAmount))
+  // Apply the rotation directly
+  rotateWheel(rotationAmount)
 }
 
 function handleTouchEnd(event: TouchEvent) {
@@ -628,50 +600,88 @@ function handleTouchEnd(event: TouchEvent) {
   
   const timeSinceStart = Date.now() - touchStartTime.value
   
-  if (!touchMoved.value && timeSinceStart < TOUCH_CONFIG.tapTimeout) {
+  // Ignore if it was a tap (not a drag)
+  if (!touchMoved.value || timeSinceStart < 150) {
     return
   }
   
   const timeSinceLastMove = Date.now() - lastTouchMoveTime.value
-  if (timeSinceLastMove < 150) {
+  if (timeSinceLastMove < 150 && lastTouchMoveAngle.value !== 0) {
+    // Clean up any existing momentum animation
     if (momentumTimeline.value) {
       momentumTimeline.value.kill()
       momentumTimeline.value = null
     }
 
+    const isMobile = window.innerWidth <= 768
+    
+    // Calculate velocity and determine if this was a "fling" (very fast swipe)
     const velocity = lastTouchMoveAngle.value
-    const velocityMagnitude = Math.abs(velocity)
+    const isFling = Math.abs(velocity) > 300
     
-    const momentumBase = velocityMagnitude * ANIMATION_CONFIG.momentum.physics.velocityMultiplier
-    const maxMomentum = 360 * ANIMATION_CONFIG.momentum.physics.maxRotations
-    const momentum = Math.min(momentumBase, maxMomentum) * Math.sign(velocity)
+    // Super-charge momentum even more for mobile
+    const baseMultiplier = isMobile ? 40 : 30
+    const maxMomentum = isMobile ? 10000 : 7200
     
-    const { minDuration, maxDuration } = ANIMATION_CONFIG.momentum.physics
-    const momentumDuration = Math.min(maxDuration, 
-      minDuration + (Math.abs(momentum) / maxMomentum) * (maxDuration - minDuration))
+    // Apply extra multiplier for flings to create dramatic spins
+    const flingMultiplier = isFling ? 1.5 : 1.0
     
-    const timeline = gsap.timeline({
-      onComplete: () => {
-        momentumTimeline.value = null
-      },
-      onInterrupt: () => {
-        momentumTimeline.value = null
-      }
+    const momentum = Math.min(Math.abs(velocity) * baseMultiplier * flingMultiplier, maxMomentum) * Math.sign(velocity)
+    
+    // Longer durations for mobile for more fun
+    const baseDuration = isMobile ? 3 : 2
+    const maxDuration = isMobile ? 16 : 12
+    const momentumDuration = Math.min(maxDuration, baseDuration + Math.abs(momentum) / 800)
+    
+    // Only apply momentum to the main wheel group
+    if (!outerGroupRef.value) return
+    
+    const currentRotation = gsap.getProperty(outerGroupRef.value, "rotation") as number || 0
+    const targetRotation = currentRotation + momentum
+    
+    momentumTimeline.value = gsap.timeline({
+      onComplete: () => { momentumTimeline.value = null },
+      onInterrupt: () => { momentumTimeline.value = null }
     })
     
-    momentumTimeline.value = timeline
-    const wheelElements = [outerGroupRef.value, middleGroupRef.value, innerGroupRef.value]
-    
-    timeline.to(wheelElements, {
-      rotation: "+=" + momentum,
-      duration: momentumDuration,
-      ease: "power2.out",
-      transformOrigin: "50% 50%"
-    })
+    if (isFling && isMobile) {
+      // For flings on mobile, add a fun elastic bounce at the end
+      momentumTimeline.value.to(outerGroupRef.value, {
+        rotation: targetRotation * 1.05, // Slightly overshoot
+        duration: momentumDuration * 0.8,
+        ease: "power1.out",
+        transformOrigin: "center center",
+        x: 0,
+        y: 0,
+        overwrite: true
+      })
+      .to(outerGroupRef.value, {
+        rotation: targetRotation,
+        duration: momentumDuration * 0.2,
+        ease: "elastic.out(1, 0.3)",
+        transformOrigin: "center center"
+      })
+    } else {
+      // Standard momentum for non-fling interactions
+      momentumTimeline.value.to(outerGroupRef.value, {
+        rotation: targetRotation,
+        duration: momentumDuration,
+        ease: "power1.out",
+        transformOrigin: "center center",
+        x: 0,
+        y: 0,
+        overwrite: true
+      }, 0)
+    }
   }
 
+  // Reset velocity tracking
   lastTouchMoveAngle.value = 0
   touchMoved.value = false
+}
+
+function handleScriptureSelect(scripture: any) {
+  selectedScripture.value = scripture
 }
 
 const debouncedHandleResize = debounce(() => {
@@ -680,6 +690,7 @@ const debouncedHandleResize = debounce(() => {
 
 // Lifecycle hooks with cleanup
 onMounted(() => {
+  console.log('Component mounted')
   initializeWheel()
   window.addEventListener('wheel', handleWheel, { passive: false })
   window.addEventListener('keydown', handleKeyDown)
@@ -708,236 +719,41 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="wheel-container w-screen h-screen flex justify-center items-center overflow-hidden relative">
+  <div class="emotion-wheel">
     <svg ref="wheelRef" 
-         class="w-[95%] h-[95%] md:w-4/5 md:h-4/5 max-w-[95vmin] md:max-w-[80vmin] max-h-[95vmin] md:max-h-[80vmin]" 
-         :viewBox="`-${WHEEL_CONFIG.maxRadius + WHEEL_CONFIG.bubblePadding} -${WHEEL_CONFIG.maxRadius + WHEEL_CONFIG.bubblePadding} ${(WHEEL_CONFIG.maxRadius + WHEEL_CONFIG.bubblePadding) * 2} ${(WHEEL_CONFIG.maxRadius + WHEEL_CONFIG.bubblePadding) * 2}`">
-      <g class="wheel-segments">
-        <!-- segments will be added here -->
-      </g>
+         class="wheel-svg" 
+         preserveAspectRatio="xMidYMid meet"
+         viewBox="-320 -320 640 640">
+      <!-- All wheel segments will be added here by JavaScript -->
     </svg>
-    <div ref="overlayRef"
-         class="fixed top-1/2 left-1/2 w-0 h-0 rounded-full transform -translate-x-1/2 -translate-y-1/2"
-         :style="{ 
-           backgroundColor: expandedEmotion ? expandedEmotion.color : 'transparent', 
-           opacity: isExpanded ? 0.9 : 0,
-           zIndex: isExpanded ? 10 : -1,
-           width: isExpanded ? '300vmax' : '0',
-           height: isExpanded ? '300vmax' : '0',
-           transition: 'opacity 0.3s ease'
-         }">
-    </div>
-    <div class="emotion-details fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white w-[95vw] max-w-[1200px] max-h-[80vh] overflow-y-auto custom-scrollbar"
-         :style="{ 
-           zIndex: isExpanded ? 20 : -1,
-           opacity: isExpanded ? 1 : 0,
-           pointerEvents: isExpanded ? 'auto' : 'none',
-           transition: 'opacity 0.3s ease'
-         }">
-      <h2 class="text-2xl md:text-3xl font-bold mb-4">{{ expandedEmotion?.name }}</h2>
-      <p class="text-lg md:text-xl mb-6 font-light">{{ expandedEmotion?.text }}</p>
-      
-      <div v-if="expandedEmotion?.Christianity" class="scripture-container text-left">
-        <div class="scripture-content">
-          <div v-for="(scripture, index) in expandedEmotion.Christianity" 
-               :key="index"
-               class="scripture-section">
-            <h3 class="text-xl font-light mb-3">{{ scripture.scriptureSource }}</h3>
-            <p class="text-base mb-4">{{ scripture.summary }}</p>
-            <p class="text-base mb-4"><strong>Key Ideas:</strong> {{ scripture.ideas }}</p>
-
-            <blockquote class="text-lg font-light italic mb-2">
-              {{ scripture.quotes[0].quote }}
-            </blockquote>
-            <p class="text-right text-base mb-8">- {{ scripture.quotes[0].author }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <button @click="contractSegment" 
-            class="close-button fixed top-5 right-5 bg-white rounded-full w-10 h-10 text-2xl cursor-pointer items-center justify-center shadow-md hover:bg-gray-100 transition-colors duration-200 opacity-0"
-            style="display: none;">
-      ×
-    </button>
   </div>
 </template>
 
 <style scoped>
-.wheel-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f5f5f5;
-  z-index: 1;
-  overflow: hidden;
-}
-
-/* Update segment styling */
-.segment-path {
-  transition: filter 0.3s ease;
-  filter: brightness(1);
-  transform-origin: center;
-  will-change: transform, opacity, d;
-}
-
-.wheel-segments {
-  transform-origin: center;
-}
-
-/* Enhance text visibility */
-text {
-  paint-order: stroke;
-  stroke: white;
-  stroke-width: 3px;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-@media (max-width: 640px) {
-  text {
-    stroke-width: 4px;
-  }
-}
-
-/* Enhanced segment styling */
-.segment-path:hover {
-  filter: brightness(1.1) contrast(1.05);
-}
-
-/* Rest of your existing styles... */
-
-.scripture-nav-btn {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.15);
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  color: white;
-  width: 60px;
-  height: 80px;
-  border-radius: 8px;
-  font-size: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  z-index: 30;
-}
-
-.scripture-nav-btn:not(:disabled):hover {
-  background: rgba(255, 255, 255, 0.25);
-}
-
-.scripture-nav-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.scripture-nav-btn.left-0 {
-  left: 1rem;
-}
-
-.scripture-nav-btn.right-0 {
-  right: 1rem;
-}
-
-.scripture-content {
-  position: relative;
-  padding: 0 2rem;
+.emotion-wheel {
   width: 100%;
-  margin: 0 auto;
-  line-height: 1.5;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
-.scripture-section {
-  margin-bottom: 2rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+.wheel-svg {
+  width: 80vmin;
+  height: 80vmin;
+  display: block;
+  padding: 0;
+  margin: 0;
 }
 
-.scripture-section:last-child {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
-}
-
-blockquote {
-  border-left: 2px solid rgba(255, 255, 255, 0.4);
-  padding-left: 1.2rem;
-  margin: 1.5rem 0;
-}
-
-/* Remove scrollbar styles */
-
-/* Responsive adjustments */
+/* Optimize for smaller screens */
 @media (max-width: 768px) {
-  .scripture-content {
-    padding: 0 1rem;
-  }
-  
-  blockquote {
-    font-size: 1rem;
-    padding-left: 1rem;
-  }
-}
-
-@keyframes fadeEffect {
-  from { opacity: 0; transform: translateX(20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-/* Add transition for content visibility */
-.scripture-slide {
-  opacity: 1;
-  transition: opacity 0.3s ease;
-}
-
-/* Ensure the close button stays on top */
-.close-button {
-  z-index: 60;
-}
-
-/* Add custom scrollbar styles */
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.5);
-  border-radius: 4px;
-}
-
-/* Prevent wheel event from affecting background when overlay is active */
-.wheel-container {
-  /* ... existing styles ... */
-  overflow: hidden;
-}
-
-/* Add padding to ensure content isn't cut off at the bottom */
-.emotion-details {
-  padding: 2rem 1rem;
-  margin: 2rem 0;
-}
-
-@media (max-width: 768px) {
-  .emotion-details {
-    padding: 1rem;
-    margin: 1rem 0;
+  .wheel-svg {
+    width: 95vmin;
+    height: 95vmin;
   }
 }
 </style>

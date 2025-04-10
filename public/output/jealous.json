@@ -1,0 +1,216 @@
+{
+  "name": "Jealous",
+  "color": "#20B2AA",
+  "text": "Jealousy can help us understand our desires.",
+  "parent": "Angry",
+  "christianity": {
+    "summary": "In Christianity, jealousy is viewed as a complex emotion with both righteous and sinful forms. Righteous jealousy, such as God's jealousy, is rooted in love and commitment, while sinful jealousy stems from insecurity or selfishness. Followers are encouraged to approach jealousy by recognizing its sources, cultivating gratitude, contentment, and trust in God's provision. Managing jealousy involves self-reflection, prayer, and aligning one's heart with godly virtues like love and kindness.",
+    "ideas": "Practically, Christians should manage jealousy through self-reflection, recognizing its causes, and praying to address these emotions. Cultivating gratitude and contentment helps reduce jealousy by focusing on the blessings received rather than comparing oneself to others. Embracing a life of service and love helps shift the focus from personal desires to God's guidance, thereby transforming potentially destructive emotions into constructive ones. Trusting in God's sovereignty and grace is crucial for overcoming jealousy rooted in insecurity or fear.",
+    "quotes": [
+      {
+        "author": "Moses",
+        "scriptureSource": "Exodus 34:14",
+        "sourceURL": "https://www.biblegateway.com/passage/?search=Exodus%2034%3A14&version=NIV",
+        "quote": "Do not worship any other god, for the Lord, whose name is Jealous, is a jealous God.",
+        "relevance": "This verse illustrates God's jealousy as a positive trait, reflecting His deep love and commitment to His people, ensuring their faithfulness and well-being.",
+        "tags": [
+          "righteous jealousy",
+          "commitment",
+          "love"
+        ]
+      },
+      {
+        "author": "Paul the Apostle",
+        "scriptureSource": "2 Corinthians 11:2",
+        "sourceURL": "https://www.biblegateway.com/passage/?search=2%20Corinthians%2011%3A2&version=NIV",
+        "quote": "I am jealous for you with a godly jealousy.",
+        "relevance": "Paul here expresses a godly jealousy, highlighting a concern driven by love and a desire for the spiritual welfare of others.",
+        "tags": [
+          "godly jealousy",
+          "love",
+          "spiritual welfare"
+        ]
+      },
+      {
+        "author": "Paul the Apostle",
+        "scriptureSource": "1 Corinthians 13:4",
+        "sourceURL": "https://www.biblegateway.com/passage/?search=1%20Corinthians%2013%3A4&version=NIV",
+        "quote": "Love is patient, love is kind. It does not envy, it does not boast, it is not proud.",
+        "relevance": "This passage contrasts sinful jealousy or envy with the virtues of love, emphasizing that true love displaces envy and does not seek to elevate oneself at the expense of others.",
+        "tags": [
+          "love",
+          "envious feelings",
+          "spiritual virtues"
+        ]
+      }
+    ]
+  },
+  "buddhism": {
+    "summary": "In Buddhism, jealousy or envy (known as irshya in Sanskrit, issa in Pali) is considered one of the major negative emotions, often classified as a 'poison.' It is seen as an obstacle to cultivating love, compassion, and wisdom. Followers are encouraged to address jealousy through practices like sympathetic joy (mudita) and cultivating self-acceptance, recognizing that happiness and success of others do not diminish one's own worth. This approach helps in transforming jealousy into a positive mindset by embracing and rejoicing in others' success.",
+    "ideas": "Buddhists manage jealousy by focusing on sympathetic joy (mudita), cultivating a mindset where they can rejoice in others' good fortune without feeling diminished. They also practice self-acceptance and self-reflection to recognize the root causes of jealousy, such as insecurity or a sense of inadequacy. Practical guidance includes recognizing the harm caused by jealousy, such as damaging relationships and perpetuating suffering, and replacing it with love and compassion for all beings.",
+    "quotes": [
+      {
+        "author": "The Buddha",
+        "scriptureSource": "Anguttara Nikaya, Sutta Pitaka (Part of Sutta 7.68; not explicitly named but related to envy)",
+        "sourceURL": "https://www.accesstoinsight.org/tipitaka/an/an07/an07.068.than.html",
+        "quote": "Envy is simply the pain of resentment, and as such, it should be abandoned.",
+        "relevance": "This quote does not directly mention 'jealousy,' but it relates to the concept of envy, which is a close emotional state. It suggests abandoning such emotions as they cause suffering.",
+        "tags": [
+          "emotion-related",
+          "scripture-based",
+          "relevant-theme"
+        ]
+      },
+      {
+        "author": "The Buddha",
+        "scriptureSource": "Dhammapada, Verse 252",
+        "sourceURL": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.23.budd.html",
+        "quote": "Victory breeds hatred. The defeated live in pain. Happily the peaceful live, giving up victory and defeat.",
+        "relevance": "This verse indirectly addresses jealousy by suggesting a path of peace and equanimity, avoiding the cycles of victory and defeat that can fuel jealousy.",
+        "tags": [
+          "emotion-related",
+          "scripture-based",
+          "relevant-theme"
+        ]
+      },
+      {
+        "author": "The Buddha",
+        "scriptureSource": "Sutta Pitaka, Itivuttaka 3.37",
+        "sourceURL": "https://www.accesstoinsight.org/tipitaka/kn/iti/iti.3.037.than.html",
+        "quote": "There are these four qualities, monks, endowed with which a monk's mind will not be overcome by attachment, hatred, or delusion. What four? He gets as he wants, and doesn't not get what he wants; having gotten but not gotten, he is still equanimous.",
+        "relevance": "This quote indirectly relates to managing jealousy by advocating equanimity in the face of gain or loss, suggesting that one should be unaffected by what others have or achieve.",
+        "tags": [
+          "emotion-related",
+          "scripture-based",
+          "relevant-theme"
+        ]
+      }
+    ]
+  },
+  "hinduism": {
+    "summary": "In Hinduism, jealousy (or *mātsarya*) is viewed as a negative emotion that arises from intolerance towards others' excellence. It is considered one of the six internal enemies and is harmful as it leads individuals to compare themselves unfavorably with others. To manage jealousy, Hindus are advised to cultivate a mindset of acceptance and compassion, recognizing the unique qualities and achievements of others without resentment. The concept of *pratipakṣa-bhāvanā* suggests that by acknowledging and replacing jealousy with positive thoughts, one can overcome it.",
+    "ideas": "Key teachings in Hinduism suggest that followers should avoid unhealthy comparisons and focus on self-improvement rather than pulling others down. In spiritual contexts, such as *bhakti*, jealousy is seen as a barrier to genuine devotion and spiritual growth. Practitioners are encouraged to rejoice in the success of others and understand that each individual's prosperity is a result of their past actions (*karma*). This understanding helps in overcoming envy by focusing on one's own spiritual journey rather than comparing with others.",
+    "quotes": [
+      {
+        "author": "Lord Krishna",
+        "scriptureSource": "Bhagavad Gita, Chapter 12, Verse 15",
+        "sourceURL": "https://www.sacred-texts.com/hin/gita/index.htm",
+        "quote": "One who does not envy but is a compassionate friend to all beings—such a devotee is very dear to Me.",
+        "relevance": "This verse emphasizes the importance of being free from envy and highlights compassion as a preferred attitude towards others. It shows that not envying others is a key trait in a devotee cherished by the divine.",
+        "tags": [
+          "compassion",
+          "devotion",
+          "Kṛṣṇa"
+        ]
+      },
+      {
+        "author": "Mahabharata, Bhishma",
+        "scriptureSource": "Mahabharata, Shanti Parva, Chapter 57, Verse 4 (approximate reference)",
+        "sourceURL": "https://archive.org/details/Mahabharata_(Sanskrit_text)",
+        "quote": "That person who is not jealous of the wealth of others, and is not attached to luxuries of life is indeed a saint, and will always overcome his life’s adversities.",
+        "relevance": "This quote from the Mahabharata highlights the importance of being free from jealousy as a path to spiritual growth and resilience. It teaches that detachment from material wealth is key to overcoming life's challenges.",
+        "tags": [
+          "detachment",
+          "spiritual growth",
+          "Mahabharata"
+        ]
+      },
+      {
+        "author": "Śankarācharya",
+        "scriptureSource": "Śankarācharya's Works (not a specific scripture verse, but a general teaching)",
+        "sourceURL": "https://www.advaita-vedanta.org/lib/shankara/",
+        "quote": "Jealousy is a state of intolerance born by seeing excellence in someone else.",
+        "relevance": "Śankarācharya's definition of jealousy highlights its negative nature as an intolerance towards others' achievements. It emphasizes the need to recognize and overcome such intolerance through self-reflection and spiritual practices.",
+        "tags": [
+          "definition",
+          "Śankarācharya",
+          "jealousy"
+        ]
+      }
+    ]
+  },
+  "islam": {
+    "summary": "In Islam, jealousy is primarily viewed as a negative emotion. It is considered haram when it involves wishing harm to others or results in actions that manifest envy or resentment. However, followers can approach it as a natural feeling that must be controlled and managed through faith and self-reflection. They should focus on gratitude for what Allah has provided and avoid comparing themselves to others. The goal is to prevent jealousy from becoming an actionable sin by not acting upon it and instead cultivating a mindset of contentment and positive envy (ghibtah), which involves wishing to possess similar blessings without wishing harm to others.",
+    "ideas": "To manage jealousy in daily life, Muslims are advised to practice gratitude, reflect on those who have less, and engage in dua (prayer) for guidance and peace. They can also focus on building good deeds and seeking refuge in Allah from the accursed shaytan. Emotional balance and self-control are key to transforming jealousy into a positive force, such as through learning from others' successes and emulating their virtues without envy. The Islamic concept of justice and fairness also emphasizes treating all individuals with kindness and respect, regardless of their possessions or status.",
+    "quotes": [
+      {
+        "author": "Qur'an",
+        "scriptureSource": "Qur'an, Surah an-Nahl, Verse 71",
+        "sourceURL": "https://quran.com/16/71",
+        "quote": "Allah favored some of you over others with wealth and properties... Do they deny the favors of Allah?",
+        "relevance": "This verse highlights Allah's will in distributing wealth and favors differently among people, cautioning against envy and encouraging gratitude for one's own blessings.",
+        "tags": [
+          "Qur'an",
+          "Gratitude",
+          "Envy"
+        ]
+      },
+      {
+        "author": "Qur'an",
+        "scriptureSource": "Qur'an, Surah an-Nisa', Verse 54",
+        "sourceURL": "https://quran.com/4/54",
+        "quote": "Do they envy men for what Allah has given them of His Bounty?",
+        "relevance": "This verse addresses jealousy by questioning why one would envy what Allah has chosen to bestow upon others, emphasizing divine will in distribution.",
+        "tags": [
+          "Qur'an",
+          "Divine Will",
+          "Envy"
+        ]
+      },
+      {
+        "author": "Qur'an",
+        "scriptureSource": "Qur'an, Surah Fussilat, Verse 34",
+        "sourceURL": "https://quran.com/41/34",
+        "quote": "The good deed and the evil deed cannot be equal. Repel [evil] by what is best, and behold, he between whom and you there was enmity will become as if he was a devoted friend.",
+        "relevance": "Though not directly about jealousy, this verse emphasizes the importance of responding to negative emotions with kindness, which is crucial in managing envy.",
+        "tags": [
+          "Qur'an",
+          "Kindness",
+          "Conflict Resolution"
+        ]
+      }
+    ]
+  },
+  "sikhism": {
+    "summary": "In Sikhism, jealousy (often referred to alongside envy) is viewed as a negative emotion that leads to suffering and spiritual deviation. Followers are encouraged to recognize it as part of the five vices (lust, anger, greed, attachment, and pride), which hinder spiritual growth. The religion advises adherents to approach jealousy by acknowledging its harmful effects and seeking to eradicate it through spiritual practices, such as staying in the company of holy people and contemplating divine teachings.",
+    "ideas": "To manage jealousy, Sikhs are advised to maintain a righteous and contented lifestyle, focus on spiritual growth, and avoid comparison with others. Meditation and service to others are recommended as means to purify thoughts and cultivate compassion. Recognizing God's infinite provision helps individuals understand that another's gain does not diminish their own resources. Maintaining humility and seeing everyone as an instrument of divine guidance can foster a sense of unity and compassion.",
+    "quotes": [
+      {
+        "author": "Guru Nanak",
+        "scriptureSource": "Sri Guru Granth Sahib (SGGS), Ang, 39",
+        "sourceURL": "http://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=39&g=4&h=0",
+        "quote": "jagi haumai mailu dukhu paaiaa malu laagee doojai bhaai",
+        "relevance": "This verse highlights the entrapment in ego (haumai) and the false love for worldly objects (doojai bhaav), which fuels jealousy. It shows how ego-based love for temporary things leads to suffering.",
+        "tags": [
+          "jealousy",
+          "ego",
+          "suffering"
+        ]
+      },
+      {
+        "author": "Guru Nanak",
+        "scriptureSource": "Sri Guru Granth Sahib (SGGS), Ang, 933",
+        "sourceURL": "http://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=933&g=4&h=0",
+        "quote": "Daahapani tani sukhu nahee binu dar binathee daar",
+        "relevance": "Here, the Guru explains that jealousy brings no peace. It creates fear and inner turmoil. This verse encourages followers to transcend jealousy for spiritual peace.",
+        "tags": [
+          "jealousy",
+          "fear",
+          "peace"
+        ]
+      },
+      {
+        "author": "Guru Nanak",
+        "scriptureSource": "Sri Guru Granth Sahib (SGGS), Ang, 1091",
+        "sourceURL": "http://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1091&g=4&h=0",
+        "quote": "ati daahpani dakh ghano teen thaav bharid",
+        "relevance": "This verse underscores the painful and cursed nature of jealousy, emphasizing its devastating effects on the spiritual path. It advises against indulging in jealousy.",
+        "tags": [
+          "jealousy",
+          "pain",
+          "curse"
+        ]
+      }
+    ]
+  }
+}

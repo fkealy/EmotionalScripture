@@ -45,11 +45,22 @@
       </div>
 
       <div 
-        v-if="religionData && religionData.quotes?.length" 
+        v-if="religionData" 
         class="scripture-section"
       >
         <div class="scripture-card">
-          <div class="quotes-section">
+          <!-- Add ideas section -->
+          <div v-if="religionData.summary" class="ideas-section">
+            <h4>Key Ideas:</h4>
+            <p>{{ religionData.summary }}</p>
+          </div>
+          
+          <!-- Add text section if it exists -->
+          <div v-if="religionData.text" class="text-section">
+            <p>{{ religionData.text }}</p>
+          </div>
+
+          <div v-if="religionData.quotes?.length" class="quotes-section">
             <div v-for="(quote, i) in religionData.quotes" :key="i" class="quote">
               <p>"{{ quote.quote }}"</p>
               <p class="reference">- {{ quote.author }}</p>
@@ -59,7 +70,7 @@
         </div>
       </div>
       <div v-else class="no-content">
-        No quotes available for {{ selectedReligion }}
+        No content available for {{ selectedReligion }}
       </div>
     </div>
   </Transition>
@@ -539,7 +550,7 @@ onUnmounted(() => {
     height: 100vh;
     max-height: 100vh;
     border-radius: 0;
-    padding: 1rem 1.25rem;
+    padding: 0.75rem 1rem;
     border: none;
     top: 0;
     left: 0;
@@ -547,40 +558,63 @@ onUnmounted(() => {
   }
 
   .header {
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .religion-tabs-container {
+    margin-bottom: 0.75rem;
   }
 
   .religion-tabs {
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-    top: 50px;
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.5rem;
+    top: 45px;
+    gap: 0.5rem;
   }
 
   .religion-tabs button {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.9rem;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
   }
 
   .tabs-chevron {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
+    margin-right: 0.25rem;
+    margin-left: 0.25rem;
   }
   
   .tabs-chevron svg {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
   }
 
   .scripture-section {
-    padding-right: 0.25rem;
-    margin-top: 0.5rem;
+    padding-right: 0.15rem;
+    margin-top: 0.25rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .scripture-card {
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
   }
 
   .quote {
-    margin: 0.75rem 0;
-    padding: 1rem;
+    margin: 0.5rem 0;
+    padding: 0.75rem;
+    padding-left: 0.75rem;
     border-radius: 4px;
+    border-left-width: 2px;
+  }
+
+  .reference {
+    margin-top: 0.35rem;
+  }
+
+  .scripture-source {
+    margin-top: 0.15rem;
   }
 
   /* Add touch-specific improvements */

@@ -289,68 +289,75 @@ function createSegments(emotions: any[], innerRadius: number, outerRadius: numbe
     
     path.setAttribute("stroke", "white")
     path.setAttribute("stroke-width", WHEEL_CONFIG.strokeWidth.toString())
-    path.setAttribute("class", "cursor-pointer segment-path")
     
-    // Add hover animation
-    path.addEventListener('mouseenter', () => {
-      if (!isExpanded.value) {
-        gsap.to(path, {
-          scale: ANIMATION_CONFIG.segment.hover.scale,
-          opacity: ANIMATION_CONFIG.segment.hover.opacity,
-          duration: ANIMATION_CONFIG.segment.hover.duration,
-          ease: "power2.out",
-          transformOrigin: "center center"
-        })
-      }
-    })
-    
-    path.addEventListener('mouseleave', () => {
-      if (!isExpanded.value) {
-        gsap.to(path, {
-          scale: 1,
-          opacity: 1,
-          duration: ANIMATION_CONFIG.segment.hover.duration,
-          ease: "power2.inOut",
-          transformOrigin: "center center"
-        })
-      }
-    })
-    
-    path.addEventListener('click', (e) => {
-      e.stopPropagation()
-      if (!isExpanded.value) {
-        // Reset any other segments first
-        const otherSegments = document.querySelectorAll('.segment-path')
-        otherSegments.forEach(segment => {
-          if (segment !== path) {
-            const normalPath = segment.getAttribute('data-normal-path')
-            if (normalPath) {
-              gsap.set(segment, {
-                d: normalPath,
-                scale: 1,
-                opacity: 1,
-                transformOrigin: "center center"
-              })
+    // Only make the path clickable if it's not in the inner circle
+    if (innerRadius !== WHEEL_CONFIG.innerRadius) {
+      path.setAttribute("class", "cursor-pointer segment-path")
+      
+      // Add hover animation
+      path.addEventListener('mouseenter', () => {
+        if (!isExpanded.value) {
+          gsap.to(path, {
+            scale: ANIMATION_CONFIG.segment.hover.scale,
+            opacity: ANIMATION_CONFIG.segment.hover.opacity,
+            duration: ANIMATION_CONFIG.segment.hover.duration,
+            ease: "power2.out",
+            transformOrigin: "center center"
+          })
+        }
+      })
+      
+      path.addEventListener('mouseleave', () => {
+        if (!isExpanded.value) {
+          gsap.to(path, {
+            scale: 1,
+            opacity: 1,
+            duration: ANIMATION_CONFIG.segment.hover.duration,
+            ease: "power2.inOut",
+            transformOrigin: "center center"
+          })
+        }
+      })
+      
+      path.addEventListener('click', (e) => {
+        e.stopPropagation()
+        if (!isExpanded.value) {
+          // Reset any other segments first
+          const otherSegments = document.querySelectorAll('.segment-path')
+          otherSegments.forEach(segment => {
+            if (segment !== path) {
+              const normalPath = segment.getAttribute('data-normal-path')
+              if (normalPath) {
+                gsap.set(segment, {
+                  d: normalPath,
+                  scale: 1,
+                  opacity: 1,
+                  transformOrigin: "center center"
+                })
+              }
             }
-          }
-        })
+          })
 
-        // Bubble animation
-        const timeline = gsap.timeline({
-          onComplete: () => {
-            expandSegment(emotion)
-          }
-        })
+          // Bubble animation
+          const timeline = gsap.timeline({
+            onComplete: () => {
+              expandSegment(emotion)
+            }
+          })
 
-        timeline.to(path, {
-          d: bubbledPath,
-          scale: ANIMATION_CONFIG.segment.click.bubbleScale,
-          duration: ANIMATION_CONFIG.segment.click.bubbleDuration,
-          ease: ANIMATION_CONFIG.segment.click.bubbleEase,
-          transformOrigin: "center center"
-        })
-      }
-    })
+          timeline.to(path, {
+            d: bubbledPath,
+            scale: ANIMATION_CONFIG.segment.click.bubbleScale,
+            duration: ANIMATION_CONFIG.segment.click.bubbleDuration,
+            ease: ANIMATION_CONFIG.segment.click.bubbleEase,
+            transformOrigin: "center center"
+          })
+        }
+      })
+    } else {
+      // For inner circle, add a non-clickable class
+      path.setAttribute("class", "non-clickable segment-path")
+    }
     
     segmentGroup.appendChild(path)
     
@@ -543,7 +550,7 @@ function handleTouchMove(event: TouchEvent) {
   
   // Exit early if movement is too small - reduce threshold for more sensitivity
   const moveDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
-  if (moveDistance < 3) return // Reduced from 5 for more sensitivity
+  if (moveDistance < 2) return // Reduced from 5 for more sensitivity
 
   event.preventDefault()
   touchMoved.value = true
@@ -620,18 +627,18 @@ function handleTouchEnd(event: TouchEvent) {
     const isFling = Math.abs(velocity) > 300
     
     // Super-charge momentum even more for mobile
-    const baseMultiplier = isMobile ? 40 : 30
-    const maxMomentum = isMobile ? 10000 : 7200
+    const baseMultiplier = isMobile ? 80 : 30  // Doubled from 40 to 80
+    const maxMomentum = isMobile ? 20000 : 7200  // Doubled from 10000 to 20000
     
     // Apply extra multiplier for flings to create dramatic spins
-    const flingMultiplier = isFling ? 1.5 : 1.0
+    const flingMultiplier = isFling ? 1.8 : 1.0  // Increased from 1.5 to 1.8
     
     const momentum = Math.min(Math.abs(velocity) * baseMultiplier * flingMultiplier, maxMomentum) * Math.sign(velocity)
     
-    // Longer durations for mobile for more fun
-    const baseDuration = isMobile ? 3 : 2
-    const maxDuration = isMobile ? 16 : 12
-    const momentumDuration = Math.min(maxDuration, baseDuration + Math.abs(momentum) / 800)
+    // Extremely long durations for super fun, gradual spins
+    const baseDuration = isMobile ? 12 : 2  // Doubled from 6 to 12
+    const maxDuration = isMobile ? 50 : 12  // Doubled from 25 to 50
+    const momentumDuration = Math.min(maxDuration, baseDuration + Math.abs(momentum) / 400)  // Changed divisor from 600 to 400
     
     // Only apply momentum to the main wheel group
     if (!outerGroupRef.value) return
@@ -645,11 +652,11 @@ function handleTouchEnd(event: TouchEvent) {
     })
     
     if (isFling && isMobile) {
-      // For flings on mobile, add a fun elastic bounce at the end
+      // For flings on mobile, use a super gradual deceleration curve
       momentumTimeline.value.to(outerGroupRef.value, {
         rotation: targetRotation * 1.05, // Slightly overshoot
-        duration: momentumDuration * 0.8,
-        ease: "power1.out",
+        duration: momentumDuration * 0.95, // Even longer initial phase
+        ease: "circ.out", // Most gradual deceleration curve
         transformOrigin: "center center",
         x: 0,
         y: 0,
@@ -657,16 +664,16 @@ function handleTouchEnd(event: TouchEvent) {
       })
       .to(outerGroupRef.value, {
         rotation: targetRotation,
-        duration: momentumDuration * 0.2,
+        duration: momentumDuration * 0.05, // Very brief bounce
         ease: "elastic.out(1, 0.3)",
         transformOrigin: "center center"
       })
     } else {
-      // Standard momentum for non-fling interactions
+      // Standard momentum for non-fling interactions, but with more gradual curves
       momentumTimeline.value.to(outerGroupRef.value, {
         rotation: targetRotation,
         duration: momentumDuration,
-        ease: "power1.out",
+        ease: isMobile ? "circ.out" : "power1.out", // Ultra gradual deceleration on mobile
         transformOrigin: "center center",
         x: 0,
         y: 0,

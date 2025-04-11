@@ -12,6 +12,7 @@ export interface ReligionData {
   summary: string
   ideas: string
   quotes: Quote[]
+  text?: string
 }
 
 // Emotion types
